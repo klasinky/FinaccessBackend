@@ -5,8 +5,8 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 
 class ModelBase(models.Model):
-    """Model base"""
-    created_at = models.DateTimeField(auto_created=True)
+    """ModelBase"""
+    created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     delete_at = models.DateTimeField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -20,6 +20,7 @@ class ModelBase(models.Model):
 
 
 class Currency(ModelBase):
+    """Currency, modelo para divisas"""
     name = models.CharField('Name', max_length=255, unique=True)
     symbol = models.CharField('Symbol', max_length=255)
 
@@ -34,21 +35,21 @@ class Currency(ModelBase):
 
 
 class UserManager(BaseUserManager):
-
+    """User Manager, crea usuario y superusuario"""
     def create_user(self, username, email, name, password=None):
         if not username:
-            raise ValueError('User must have an username')
+            raise ValueError('El usuario debe tener un nombre de usuario')
         if not email:
-            raise ValueError('User must have an email')
+            raise ValueError('El usuario debe tener un correo electrónico')
         if not name:
-            raise ValueError('User must have a name')
+            raise ValueError('El usuario debe tener un nombre')
         if not password:
-            raise ValueError('User must have a password')
+            raise ValueError('El usuario debe tener una contraseña')
 
-        user = self.create_user(
+        user = self.model(
             email=self.normalize_email(email),
             name=name,
-            username=username
+            username=username,
         )
         user.set_password(password)
         user.save(using=self.db)
@@ -77,26 +78,32 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
+    """User, modelo para usuario"""
     username = models.CharField('Username', max_length=255, unique=True)
     email = models.EmailField('Email', max_length=255, unique=True)
     name = models.CharField('Name', max_length=255)
-    currency = models.ForeignKey(Currency, on_delete=models.PROTECT, null=True, blank=True)
+    currency = models.ForeignKey(Currency, on_delete=models.PROTECT, default=1)
     date_joined = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
     is_superuser = models.BooleanField(default=False)
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'name']
 
 
-class Category(models.Model):
+class Category(ModelBase):
+    """Category, modelo para categorias de ingresos y gastos"""
     name = models.CharField('Name', max_length=255)
 
 
-class Month(models.Model):
-    start_date = models.DateTimeField(auto_now_add=True)
+class Month(ModelBase):
+    """Month, modelo para llevar el control del mes"""
+    date = models.DateField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
 
 
 class AmountBase(ModelBase):
+    """AmountBase, Base para los ingresos y gastos"""
     name = models.CharField('Name', max_length=255)
     description = models.TextField('Entry')
     amount = models.FloatField('Amount')
@@ -108,18 +115,19 @@ class AmountBase(ModelBase):
 
 
 class Entry(AmountBase):
-
+    """Entry, modelo para los ingresos"""
     def __str__(self):
         return self.name
 
 
 class Expense(AmountBase):
-
+    """Expense, modelo para los gastos"""
     def __str__(self):
         return self.name
 
 
 class Post(ModelBase):
+    """Post, modelo para el post"""
     title = models.CharField('Title', max_length=255)
     description = models.TextField()
     finished = models.BooleanField(default=False)
@@ -131,6 +139,7 @@ class Post(ModelBase):
 
 
 class Comment(MPTTModel, ModelBase):
+    """Comment, modelo para los comentarios del post"""
     description = models.TextField(null=False)
     author = models.ForeignKey(User, on_delete=models.PROTECT)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -142,11 +151,13 @@ class Comment(MPTTModel, ModelBase):
 
 
 class CompanyStock(ModelBase):
+    """CompanyStock, modelo para api de acciones de la bolsa"""
     name = models.CharField('Name', max_length=255)
     url = models.URLField(max_length=255)
 
 
 class UserCompany(ModelBase):
+    """UserCompany, modelo para vincular un usuario con una accion de bolsa"""
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     companystock = models.ForeignKey(CompanyStock, on_delete=models.CASCADE)
 
