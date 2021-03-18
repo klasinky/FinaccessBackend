@@ -1,1 +1,30 @@
-# JuanManuelPRWBackend
+# :money_with_wings: Control de Finanzas PRW Backend :money_with_wings:
+
+---
+## Autores:
+- Manuel Gonzalez Leal (https://github.com/klasinky)
+- Juan Daniel Padilla Obando (https://github.com/zclut)
+---
+
+## Bitácora
+
+### Miércoles 17 de Marzo
+    
+    - Configuración del proyecto
+    - Creación de la base de datos
+    
+### Jueves 18 de Marzo
+
+    - Creación de los endpoint de usuario
+        + Login
+        + Register
+        + Profile
+        + Detail
+        + Update
+    - Creación de los test pertinentes
+    - Cambios en la base de datos
+    - Permisos
+    - Tokens
+
+
+

@@ -29,7 +29,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'core'
+    'rest_framework.authtoken',
+    'corsheaders',
+    'django_filters',
+    'django_extensions',
+    'core',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -102,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-ES'
 
 TIME_ZONE = 'UTC'
 
@@ -110,7 +115,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -135,6 +140,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 
 }
+
+
 
 # CORS
 
