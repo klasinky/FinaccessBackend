@@ -17,7 +17,7 @@ def create_user(**params):
 
 CREATE_USER_URL = reverse('users-register')
 LOGIN_USER_URL = reverse('users-login')
-
+DELETE_USER_URL = reverse('users-soft')
 
 def getProfileURL(username):
     return reverse('users-profile', args=[username])
@@ -117,4 +117,11 @@ class UserPrivateAPITests(TestCase):
         self.assertEqual(self.user.name, payload['name'])
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-
+    def test_delete_user_profile(self):
+        """Elimina un usuario"""
+        print("URL:", DELETE_USER_URL)
+        res = self.client.patch(DELETE_USER_URL)
+        self.user.refresh_from_db()
+        print("Data despues del refresh", res.data)
+        self.assertEqual(self.user.is_active, False)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)

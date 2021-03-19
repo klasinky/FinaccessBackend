@@ -54,4 +54,16 @@ class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         """Obtiene el perfil del usuario, necesita estar autenticado"""
         user = self.get_object()
         data = UserModelSerializer(user).data
-        return Response(data)
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['PATCH'])
+    def soft_delete(self, request, *args, **kwargs):
+        """Elimina un usuario, necesita estar autenticado"""
+        instance = request.user
+        if instance is not None:
+            instance.is_active = False
+            instance.save()
+            data = UserModelSerializer(instance).data
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

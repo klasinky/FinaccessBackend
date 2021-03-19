@@ -85,6 +85,7 @@ class User(AbstractBaseUser):
     currency = models.ForeignKey(Currency, on_delete=models.PROTECT, default=1)
     date_joined = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
     is_superuser = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
