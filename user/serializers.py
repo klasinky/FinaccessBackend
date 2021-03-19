@@ -16,10 +16,11 @@ class UserModelSerializer(serializers.ModelSerializer):
             'username',
             'name',
             'email',
-            'last_login'
+            'last_login',
+            'is_active',
         )
         read_only_fields = (
-            'last_login',
+            'last_login','is_active'
         )
 
 

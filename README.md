@@ -26,5 +26,11 @@
     - Permisos
     - Tokens
 
+### Viernes 19 de Marzo
 
+    - Creación de soft delete del usuario
+    - Modificación de las urls
+    - Cambios de la base de datos
+        + Nuevo campo "is_active" (core_user)     
+    - Creación de los test para el soft delete
 
