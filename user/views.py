@@ -5,7 +5,8 @@ from rest_framework.response import Response
 
 from core.models import User
 from user.permissions import IsAccountOwner
-from user.serializers import UserModelSerializer, UserSignUpSerializer, UserLoginSerializer
+from user.serializers import UserModelSerializer, UserSignUpSerializer,\
+    UserLoginSerializer, UserChangePasswordSerializer
 
 
 class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
@@ -67,3 +68,23 @@ class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
             return Response(data, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['PATCH'])
+    def change_password(self, request, *args, **kwargs):
+        """
+        Cambia la contraseña del usuario,
+        necesita proporcionar la contraseña antigua
+        Código sacado de:
+        https://www.edureka.co/community/74056/how-to-update-user-password-in-django-rest-framework
+        """
+        serializer = UserChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if not request.user.check_password(serializer.data.get("old_password")):
+            return Response({"old_password": ["Contraseña incorrecta."]},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        request.user.set_password(serializer.data.get("new_password"))
+        request.user.save()
+
+        return Response({'message': 'Contraseña actualizada correctamente'},
+                        status=status.HTTP_200_OK)

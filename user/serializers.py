@@ -20,7 +20,7 @@ class UserModelSerializer(serializers.ModelSerializer):
             'is_active',
         )
         read_only_fields = (
-            'last_login','is_active'
+            'last_login', 'is_active'
         )
 
 
@@ -89,3 +89,16 @@ class UserLoginSerializer(serializers.Serializer):
     def create(self, data):
         token, created = Token.objects.get_or_create(user=self.context['user'])
         return self.context['user'], token.key
+
+
+class UserChangePasswordSerializer(serializers.Serializer):
+    """Serializer para cambiar la contraseña"""
+    old_password = serializers.CharField(max_length=255, required=True)
+    new_password = serializers.CharField(max_length=255, required=True)
+
+    class Meta:
+        model = User
+        extra_kwargs = {
+            "new_password": {"write_only": True},
+            "old_password": {"write_only": True},
+        }

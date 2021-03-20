@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
-from django.contrib.auth.hashers import make_password, check_password
 
 
 def create_user(**params):
@@ -12,19 +11,21 @@ def create_user(**params):
         name=params['name'],
         email=params['email'],
         password=params['password']
-        )
+    )
 
 
 CREATE_USER_URL = reverse('users-register')
 LOGIN_USER_URL = reverse('users-login')
 DELETE_USER_URL = reverse('users-soft')
+CHANGE_PASSWORD_URL = reverse('users-changepassword')
+
 
 def getProfileURL(username):
     return reverse('users-profile', args=[username])
 
+
 def getDetailURL(username):
     return reverse('users-detail', args=[username])
-
 
 
 class UserPublicAPITest(TestCase):
@@ -67,7 +68,8 @@ class UserPublicAPITest(TestCase):
         self.assertIn('access_token', res.data)
 
     def test_profile_fail_not_credentials(self):
-        """Comprobar que no se pueda acceder a un perfil sin estar autenticado"""
+        """Comprobar que no se pueda acceder
+        a un perfil sin estar autenticado"""
         profile_url = getProfileURL(self.payload['username'])
         res = self.client.get(profile_url)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -92,7 +94,7 @@ class UserPrivateAPITests(TestCase):
         res = self.client.post(LOGIN_USER_URL, {
             'email': self.payload['email'],
             'password': self.payload['password']
-            })
+        })
 
         token = res.data['access_token']
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
@@ -117,11 +119,57 @@ class UserPrivateAPITests(TestCase):
         self.assertEqual(self.user.name, payload['name'])
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
+    def test_change_password(self):
+        """Cambiar contraseña"""
+        payload = {
+            'old_password': self.payload['password'],
+            'new_password': 'Maju321!'
+        }
+        res = self.client.patch(CHANGE_PASSWORD_URL, payload)
+        self.user.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertTrue(self.user.check_password(payload['new_password']))
+
+    def test_change_password_old_password_wrong(self):
+        """No permitir cambiar la contraseña si la antigua es incorrecta"""
+        payload = {
+            'old_password': 'EstaNoEsLaContrasenia123!',
+            'new_password': 'Maju321!'
+        }
+        res = self.client.patch(CHANGE_PASSWORD_URL, payload)
+        self.user.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(self.user.check_password(payload['new_password']))
+        self.assertIn('Contraseña incorrecta.', res.data['old_password'])
+
+    def test_change_password_old_password_required(self):
+        """Contraseña antigua requerida"""
+        payload = {
+            'old_password': '',
+            'new_password': 'Maju321!'
+        }
+        res = self.client.patch(CHANGE_PASSWORD_URL, payload)
+        self.user.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(self.user.check_password(payload['new_password']))
+        self.assertTrue(self.user.check_password(self.payload['password']))
+
+    def test_change_password_new_password_required(self):
+        """Comprobar que no se pueda cambiar la contraseña
+         si no se le pasa una nueva"""
+        payload = {
+            'old_password': self.payload['password'],
+            'new_password': ''
+        }
+        res = self.client.patch(CHANGE_PASSWORD_URL, payload)
+        self.user.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(self.user.check_password(payload['new_password']))
+        self.assertTrue(self.user.check_password(payload['old_password']))
+
     def test_delete_user_profile(self):
         """Elimina un usuario"""
-        print("URL:", DELETE_USER_URL)
         res = self.client.patch(DELETE_USER_URL)
         self.user.refresh_from_db()
-        print("Data despues del refresh", res.data)
         self.assertEqual(self.user.is_active, False)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

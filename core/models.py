@@ -55,7 +55,7 @@ class UserManager(BaseUserManager):
         user.save(using=self.db)
         return user
 
-    def create_superuser(self,username, email, name, password=None):
+    def create_superuser(self, username, email, name, password=None):
 
         if not username:
             raise ValueError('User must have an username')
@@ -83,7 +83,9 @@ class User(AbstractBaseUser):
     email = models.EmailField('Email', max_length=255, unique=True)
     name = models.CharField('Name', max_length=255)
     currency = models.ForeignKey(Currency, on_delete=models.PROTECT, default=1)
-    date_joined = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
+    date_joined = models.DateTimeField(
+        verbose_name='date joined',
+        auto_now_add=True)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     objects = UserManager()
@@ -133,7 +135,7 @@ class Post(ModelBase):
     description = models.TextField()
     finished = models.BooleanField(default=False)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    likes = models.ManyToManyField(User, related_name='post_like' )
+    likes = models.ManyToManyField(User, related_name='post_like')
 
     def total_likes(self):
         return self.likes.count()
@@ -144,7 +146,8 @@ class Comment(MPTTModel, ModelBase):
     description = models.TextField(null=False)
     author = models.ForeignKey(User, on_delete=models.PROTECT)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    parent = TreeForeignKey('self', related_name='children', null=True, db_index=True, on_delete=models.CASCADE)
+    parent = TreeForeignKey('self', related_name='children', null=True,
+                            db_index=True, on_delete=models.CASCADE)
     likes = models.ManyToManyField(User, related_name='comment_like')
 
     def total_likes(self):
@@ -161,4 +164,3 @@ class UserCompany(ModelBase):
     """UserCompany, modelo para vincular un usuario con una accion de bolsa"""
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     companystock = models.ForeignKey(CompanyStock, on_delete=models.CASCADE)
-
