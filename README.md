@@ -8,12 +8,12 @@
 
 ## Bitácora
 
-### Miércoles 17 de Marzo (3 horas) :white_check_marck:
+### Miércoles 17 de Marzo (3 horas) :white_check_mark:
     
     - Configuración del proyecto
     - Creación de la base de datos
     
-### Jueves 18 de Marzo (5 horas) :white_check_marck:
+### Jueves 18 de Marzo (5 horas) :white_check_mark:
 
     - Creación de los endpoint de usuario
         + Login
@@ -26,7 +26,7 @@
     - Permisos
     - Tokens
 
-### Viernes 19 de Marzo (2 horas 30 minutos) :white_check_marck:
+### Viernes 19 de Marzo (2 horas 30 minutos) :white_check_mark:
 
     - Creación de soft delete del usuario
     - Modificación de las urls
@@ -34,7 +34,7 @@
         + Nuevo campo "is_active" (core_user)     
     - Creación de los test para el soft delete
 
-### Sábado 20 de Marzo (1 hora) :white_check_marck:
+### Sábado 20 de Marzo (1 hora) :white_check_mark:
 
     - Cambiar contraseña del usuario (Endpoint)
     - Instalar flake8 (para verificar el código)
