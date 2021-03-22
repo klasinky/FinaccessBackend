@@ -1,5 +1,8 @@
 # :money_with_wings: Control de Finanzas PRW Backend :money_with_wings:
 
+[![CircleCI](https://circleci.com/gh/klasinky/JuanManuelPRWBackend.svg?style=svg&circle-token=d7afef3e3010d0ac5f16c8a9a75bef6038408c34)](https://circleci.com/gh/klasinky/JuanManuelPRWBackend)
+
+
 ---
 ## Autores:
 - Manuel Gonzalez Leal (https://github.com/klasinky)
