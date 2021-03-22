@@ -34,8 +34,9 @@
         + Nuevo campo "is_active" (core_user)     
     - Creación de los test para el soft delete
 
-### Sábado 20 de Marzo (1 hora) :white_check_mark:
+### Sábado 20 de Marzo (5 horas) :white_check_mark:
 
+#### 1 Hora
     - Cambiar contraseña del usuario (Endpoint)
     - Instalar flake8 (para verificar el código)
     - Tests
@@ -44,4 +45,17 @@
         + Cambiar contraseña sin proporcionar la antigua
         + Comprobar que no se pueda cambiar la contraseña si no se le pasa la nueva
     - Agregamos serializer para cambiar la contraseña
-
+#### 4 horas
+    - Creación de los endpoints de Month
+        + Crear
+        + Editar
+        + Eliminar
+        + Ver (Solo se pueden ver los del usuario)
+        + Listar (Solo se pueden ver los del usuario)
+    - Creacion de los serializer
+        + Expense
+        + Entry
+        + Category
+        + Month
+    - Creación de un test
+        + Creación de mes
