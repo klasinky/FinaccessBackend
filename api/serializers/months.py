@@ -1,16 +1,16 @@
-from django.contrib.auth.hashers import make_password, check_password
+import datetime
 from django.db.models import Sum
 from rest_framework import serializers
-
 from core.models import Month, Entry, Expense
-from user.serializers import UserModelSerializer
 
 
-class MonthModelSerializer(serializers.ModelSerializer):
+class MonthModelSerializer(serializers.HyperlinkedModelSerializer):
     """Month serializer"""
 
-    user = UserModelSerializer(read_only=True)
-    date = serializers.DateField(read_only=True)
+    url = serializers.HyperlinkedIdentityField(view_name="months-viewset",
+                                               read_only=True,
+                                               lookup_field="id")
+    date = serializers.DateField(read_only=True, format="%Y-%m")
     total_entries = serializers.SerializerMethodField(read_only=True)
     total_expenses = serializers.SerializerMethodField(read_only=True)
 
@@ -26,18 +26,17 @@ class MonthModelSerializer(serializers.ModelSerializer):
             .aggregate(Sum('amount'))['amount__sum'] or 0.0
         return total
 
-    """
-    total_entries =
-    total_expenses = 
-    CATEGORIES = [
-        category1: [
-            entries: []
-            expenses: []
-        ]
-    ] 
-    """
+    def create(self, validated_data):
+        user = validated_data['user']
+        now = datetime.date.today()
+        if Month.objects.filter(user=user, date__month=now.month, date__year=now.year).exists():
+            raise serializers.ValidationError({"detail": "No puedes crear dos meses iguales"})
+
+        obj = Month.objects.create(**validated_data)
+        return obj
+
     class Meta:
         model = Month
         fields = (
-            'id', 'user', 'date', 'total_entries', 'total_expenses'
+            'url', 'date', 'total_entries', 'total_expenses'
         )
