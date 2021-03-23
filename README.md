@@ -62,3 +62,16 @@
         + Month
     - Creación de un test
         + Creación de mes
+
+### Martes 23 de Marzo (5 horas) :white_check_mark:
+    - Creación de los endpoint
+        + Entry
+        + Expense
+    - Implementación de swagger
+    - Month endpoint
+        + Gráficos (Categoria del mes)
+        + No permitir crear dos meses iguales
+    - Creación de test
+        + Entry
+        + Expense
+        + Month

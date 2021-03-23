@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'django_extensions',
+    'drf_yasg',
     'core',
     'user',
     'api',
@@ -71,7 +72,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-if env("CIRCLE_CI"):
+if env("CIRCLE_CI") == "True":
     DATABASES = {
        'default': {
             'ENGINE': 'django.db.backends.postgresql',

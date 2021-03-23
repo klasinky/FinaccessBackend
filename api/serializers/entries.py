@@ -5,17 +5,18 @@ from core.models import Entry
 
 
 class EntryModelSerializer(serializers.ModelSerializer):
-    """"""
+    """Entry Model Serializer"""
+
+    # url = serializers.HyperlinkedIdentityField(view_name="months-retrieve-update", read_only=True, lookup_field="id")
     name = serializers.CharField(
         max_length=255,
         min_length=2,
         required=True)
     description = serializers.CharField(max_length=255)
     amount = serializers.FloatField()
-    month = MonthModelSerializer(read_only=True)
 
     class Meta:
         model = Entry
         fields = (
-            'id', 'name', 'description', 'amount', 'month'
+            'id', 'name', 'description', 'amount'
         )
