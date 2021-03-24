@@ -54,8 +54,10 @@ class MonthViewSet(mixins.ListModelMixin,
         serializer_month = self.get_serializer(instance,
                                                context=serializer_context)
         category = Category.objects.filter(Q(expense__month=instance) |
-                                           Q(entry__month=instance))
+                                           Q(entry__month=instance)).distinct()
+
         categories = []
+
         for c in category:
             expenses = Expense.objects.filter(month=instance,
                                               category=c, is_active=True)
@@ -72,7 +74,8 @@ class MonthViewSet(mixins.ListModelMixin,
                                                            many=True,
                                                            context=serializer_context).data,
                         'entries': EntryModelSerializer(entries,
-                                                        many=True).data,
+                                                        many=True,
+                                                        context=serializer_context).data,
                 }
             }
 
@@ -89,7 +92,7 @@ class MonthViewSet(mixins.ListModelMixin,
         """
             https://stackoverflow.com/questions/38778080/pass-kwargs-into-django-filter
         """
-        categories = Category.objects.filter(**filter_category)
+        categories = Category.objects.filter(**filter_category).distinct()
         data = []
         total = 0
         model = apps.get_model('core', model_name)
@@ -99,10 +102,10 @@ class MonthViewSet(mixins.ListModelMixin,
             for instance in model_instance:
                 total += instance.amount
 
-                data.append({
-                    'name': str(c.name),
-                    'total': total,
-                })
+            data.append({
+                'name': str(c.name),
+                'total': total,
+            })
             total = 0
 
         return Response(list(data))
@@ -127,5 +130,4 @@ class MonthViewSet(mixins.ListModelMixin,
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
 

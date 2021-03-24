@@ -16,3 +16,11 @@ class IsAmountBaseOwner(BasePermission):
     def has_permission(self, request, view):
         amount_base = view.get_object()
         return amount_base.month.user == request.user
+
+
+class IsMonthOwner(BasePermission):
+    """Validar que eres el dueño del mes al crear un ingreso o gasto"""
+    message = 'No tienes permisos para acceder a este recurso'
+
+    def has_permission(self, request, view):
+        return view.month.user == request.user

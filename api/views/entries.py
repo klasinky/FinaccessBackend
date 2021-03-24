@@ -3,7 +3,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from api.permissions import IsAmountBaseOwner
 from api.serializers.entries import EntryModelSerializer
-from api.views.amount_base import AmountBaseCreateView
+from api.views.amount_base import AmountBaseCreateView, AmountBaseUploadXLS, AmountBaseDownloadXLS
 from core.models import Entry
 
 
@@ -35,3 +35,12 @@ class EntryViewSet(mixins.RetrieveModelMixin,
             month__user=self.request.user,
             pk=self.kwargs['id']
         )
+
+
+class EntryUploadXLS(AmountBaseUploadXLS):
+    model = Entry
+
+
+class EntryDownloadXLS(AmountBaseDownloadXLS):
+    model = Entry
+    filename = "Entry_report_"
