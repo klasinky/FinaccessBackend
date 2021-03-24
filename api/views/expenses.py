@@ -1,14 +1,14 @@
 from rest_framework import viewsets, mixins
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+
 from api.permissions import IsAmountBaseOwner
 from api.serializers.expenses import ExpenseModelSerializer
-from api.views.amount_base import AmountBaseCreateView
+from api.views.amount_base import AmountBaseCreateView, AmountBaseUploadXLS, AmountBaseDownloadXLS
 from core.models import Expense
 
 
 class ExpenseCreateView(AmountBaseCreateView):
-
     serializer_class = ExpenseModelSerializer
 
 
@@ -35,3 +35,12 @@ class ExpenseViewSet(mixins.RetrieveModelMixin,
             month__user=self.request.user,
             pk=self.kwargs['id']
         )
+
+
+class ExpenseUploadXLS(AmountBaseUploadXLS):
+    model = Expense
+
+
+class ExpenseDownloadXLS(AmountBaseDownloadXLS):
+    model = Expense
+    filename = "Expense_report_"

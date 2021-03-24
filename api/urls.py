@@ -1,7 +1,7 @@
 from django.urls import path
 from api.views.categories import list_category
-from api.views.entries import EntryCreateView, EntryViewSet
-from api.views.expenses import ExpenseCreateView, ExpenseViewSet
+from api.views.entries import EntryCreateView, EntryViewSet, EntryUploadXLS, EntryDownloadXLS
+from api.views.expenses import ExpenseCreateView, ExpenseViewSet, ExpenseUploadXLS, ExpenseDownloadXLS
 from api.views.months import MonthViewSet
 
 # Month
@@ -70,4 +70,12 @@ urlpatterns = [
     # Entry
     path('months/<int:id>/create/entry', entry_create, name="entries"),
     path('entries/<int:id>', entry_viewset, name="entries-viewset"),
+
+    # Import XLSX
+    path('months/<int:id>/import/expense', ExpenseUploadXLS.as_view(), name="expenses-upload-xls"),
+    path('months/<int:id>/import/entry', EntryUploadXLS.as_view(), name="entries-upload-xls"),
+
+    # Export XLSX
+    path('months/<int:id>/export/expense', ExpenseDownloadXLS.as_view(), name="expenses-download-xls"),
+    path('months/<int:id>/export/entry', EntryDownloadXLS.as_view(), name="entries-download-xls")
 ]
