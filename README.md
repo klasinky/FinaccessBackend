@@ -11,12 +11,12 @@
 
 ## Bitácora
 
-### Miércoles 17 de Marzo (3 horas) :white_check_mark:
+### :white_check_mark: Miércoles 17 de Marzo (3 horas) :white_check_mark:
     
     - Configuración del proyecto
     - Creación de la base de datos
-    
-### Jueves 18 de Marzo (5 horas) :white_check_mark:
+---
+### :white_check_mark: Jueves 18 de Marzo (5 horas) :white_check_mark:
 
     - Creación de los endpoint de usuario
         + Login
@@ -28,18 +28,19 @@
     - Cambios en la base de datos
     - Permisos
     - Tokens
-
-### Viernes 19 de Marzo (2 horas 30 minutos) :white_check_mark:
+---
+### :white_check_mark: Viernes 19 de Marzo (2 horas 30 minutos) :white_check_mark:
 
     - Creación de soft delete del usuario
     - Modificación de las urls
     - Cambios de la base de datos
         + Nuevo campo "is_active" (core_user)     
     - Creación de los test para el soft delete
-
-### Sábado 20 de Marzo (5 horas) :white_check_mark:
+---
+### :white_check_mark: Sábado 20 de Marzo (5 horas) :white_check_mark:
 
 #### 1 Hora
+
     - Cambiar contraseña del usuario (Endpoint)
     - Instalar flake8 (para verificar el código)
     - Tests
@@ -48,7 +49,9 @@
         + Cambiar contraseña sin proporcionar la antigua
         + Comprobar que no se pueda cambiar la contraseña si no se le pasa la nueva
     - Agregamos serializer para cambiar la contraseña
+
 #### 4 horas
+
     - Creación de los endpoints de Month
         + Crear
         + Editar
@@ -62,8 +65,9 @@
         + Month
     - Creación de un test
         + Creación de mes
+---
+### :white_check_mark: Martes 23 de Marzo (5 horas) :white_check_mark:
 
-### Martes 23 de Marzo (5 horas) :white_check_mark:
     - Creación de los endpoint
         + Entry
         + Expense
@@ -75,3 +79,21 @@
         + Entry
         + Expense
         + Month
+---
+### :white_check_mark: Miércoles 24 de Marzo (5 horas) :white_check_mark:
+
+    - Creacion de views
+        + AmountBaseUploadXLS
+        + AmountBaseDownloadXLS
+        ```
+            Para no repetir el mismo código en Expense y Entry,
+            simplemente extendiendo de dichas vistas se podra
+            utilizar en cualquiera de las vistas
+        ```
+    - Editar Serializer EntryModelSerializer y ExpenseModelSerializer
+        + Añadir HyperLink
+    - Creación de URL
+        + Importar XLS (Entry, Expense)
+        + Exportar XLS (Entry, Expense)
+    - Openpyxl (requirements.txt)
+    
