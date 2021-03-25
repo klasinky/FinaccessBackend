@@ -96,4 +96,23 @@
         + Importar XLS (Entry, Expense)
         + Exportar XLS (Entry, Expense)
     - Openpyxl (requirements.txt)
+---
+### :white_check_mark: Jueves 25 de Marzo (2 horas) :white_check_mark:
+
+    - Creación de Serializer
+        + AmountBase (Para usarlo en Entry y Expense)
+        ```
+            Para no repetir el mismo código en Expense y Entry,
+            simplemente extendiendo de dicho serializer se podra
+            utilizar en cualquiera de los serializer
+        ```
+    - Post Endpoint
+        + Crear
+        + Editar
+        + Eliminar
+        + Ver 
+        + Listar 
+        + Finalizar Post
+        + Test
+
     
