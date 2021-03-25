@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from api.permissions import IsAccountOwner, IsPostOwner
 from api.serializers.posts import PostModelSerializer
@@ -56,3 +57,25 @@ class PostViewSet(mixins.ListModelMixin,
         post.save()
         data = PostModelSerializer(post, context=serializer_context).data
         return Response(data, status=status.HTTP_200_OK)
+
+
+class PostLikeView(APIView):
+
+    permissions_class = [IsAuthenticated, ]
+
+    def dispatch(self, request, *args, **kwargs):
+        id = kwargs.pop('id')
+        self.post = get_object_or_404(Post, id=id)
+        return super(PostLikeView, self).dispatch(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        serializer_context = {
+            'request': request,
+        }
+        if request.user in self.post.likes.all():
+            self.post.likes.remove(request.user)
+        else:
+            self.post.likes.add(request.user)
+        self.post.save()
+        data = PostModelSerializer(self.post, context=serializer_context).data
+        return Response(data, status.HTTP_200_OK)

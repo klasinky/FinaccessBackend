@@ -97,8 +97,9 @@
         + Exportar XLS (Entry, Expense)
     - Openpyxl (requirements.txt)
 ---
-### :white_check_mark: Jueves 25 de Marzo (2 horas) :white_check_mark:
+### :white_check_mark: Jueves 25 de Marzo (5 horas 30 minutos) :white_check_mark:
 
+#### 2 Horas
     - Creación de Serializer
         + AmountBase (Para usarlo en Entry y Expense)
         ```
@@ -115,4 +116,7 @@
         + Finalizar Post
         + Test
 
+
+
+            
     

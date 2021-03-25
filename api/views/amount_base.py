@@ -79,14 +79,14 @@ class AmountBaseUploadXLS(APIView):
                     try:
                         category = Category.objects.get(pk=int(category_id))
                         amount = float(amount)
-                        expense = self.model.objects.create(
+                        model = self.model.objects.create(
                             name=name,
                             description=description,
                             amount=amount,
                             category=category,
                             month=self.month
                         )
-                        expense.save()
+                        model.save()
                         data['inserts'].append(
                             f"{name} - {description} - {amount} - {category.name}"
                         )
