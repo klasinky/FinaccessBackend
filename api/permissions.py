@@ -24,3 +24,11 @@ class IsMonthOwner(BasePermission):
 
     def has_permission(self, request, view):
         return view.month.user == request.user
+
+
+class IsPostOwner(BasePermission):
+    """Validar que eres el dueño del post"""
+    message = 'No tienes permisos para acceder a este recurso'
+
+    def has_permission(self, request, view):
+        return view.get_object().author == request.user

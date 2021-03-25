@@ -3,6 +3,7 @@ from api.views.categories import list_category
 from api.views.entries import EntryCreateView, EntryViewSet, EntryUploadXLS, EntryDownloadXLS
 from api.views.expenses import ExpenseCreateView, ExpenseViewSet, ExpenseUploadXLS, ExpenseDownloadXLS
 from api.views.months import MonthViewSet
+from api.views.posts import PostViewSet
 
 # Month
 
@@ -52,6 +53,27 @@ entry_viewset = EntryViewSet.as_view({
     'delete': 'destroy'
 })
 
+# Post
+
+post_viewset = PostViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy'
+})
+
+post_create_list = PostViewSet.as_view({
+    'post': 'create',
+    'get': 'list'
+})
+
+
+post_change_finished = PostViewSet.as_view({
+    'patch': 'change_finished_post'
+})
+
+
+
 urlpatterns = [
     # Months
     path('months', month_create, name="months"),
@@ -77,5 +99,11 @@ urlpatterns = [
 
     # Export XLSX
     path('months/<int:id>/export/expense', ExpenseDownloadXLS.as_view(), name="expenses-download-xls"),
-    path('months/<int:id>/export/entry', EntryDownloadXLS.as_view(), name="entries-download-xls")
+    path('months/<int:id>/export/entry', EntryDownloadXLS.as_view(), name="entries-download-xls"),
+
+    # Post
+    path('posts', post_create_list, name="posts-create-list"),
+    path('posts/<int:id>', post_viewset, name="posts-viewset"),
+    path('posts/<int:id>/finished', post_change_finished, name="posts-change-finished"),
+
 ]
