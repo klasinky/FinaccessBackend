@@ -116,7 +116,15 @@
         + Finalizar Post
         + Test
 
-
+#### 3 Horas 30 minutos
+    - Creación de los Endpoint
+        + Comment
+            * Crear
+                * Response a otro comentario
+            * Eliminar
+        + CommentLike
+        + PostLike
+        
 
             
     
