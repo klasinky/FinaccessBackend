@@ -33,6 +33,9 @@ CREATE_POST_URL = reverse('posts-create-list')
 def get_post_url(id):
     return reverse('posts-viewset', args=[id])
 
+def get_post_like_url(id):
+    return reverse('posts-like', args=[id])
+
 
 class PostPrivateAPITest(TestCase):
 
@@ -67,6 +70,17 @@ class PostPrivateAPITest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         post_count = Post.objects.filter(author=self.user).count()
         self.assertEqual(post_count, 1)
+
+    def test_create_post_fail_cache(self):
+        """Comprobar que no te deje crear 2 post consecutivos"""
+        payload = {
+            'title': 'Test Title',
+            'description': 'Test Description'
+        }
+        res = self.client.post(CREATE_POST_URL, payload)
+        res2 = self.client.post(CREATE_POST_URL, payload)
+        self.assertEqual(res2.status_code, status.HTTP_400_BAD_REQUEST)
+
 
     def test_retrieve_post(self):
         """Obtener un post"""
@@ -163,3 +177,33 @@ class PostPrivateAPITest(TestCase):
         post.refresh_from_db()
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         self.assertFalse(post.finished)
+
+    def test_post_like(self):
+        """Dar like a un post"""
+        post = create_post(self.user)
+        res = self.client.put(get_post_like_url(post.pk))
+        post.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(post.total_likes(), 1)
+
+    def test_post_like_fail_cache(self):
+        """Comprobar el cache de los likes en el mismo post"""
+        post = create_post(self.user)
+        self.client.put(get_post_like_url(post.pk))
+        res = self.client.put(get_post_like_url(post.pk))
+        post.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(post.total_likes(), 1)
+
+    def test_different_post_like(self):
+        """Comprobar el cache de los likes en diferentes posts"""
+        post = create_post(self.user)
+        post2 = create_post(self.user)
+        res = self.client.put(get_post_like_url(post.pk))
+        res2 = self.client.put(get_post_like_url(post2.pk))
+        post.refresh_from_db()
+        post2.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(post.total_likes(), 1)
+        self.assertEqual(res2.status_code, status.HTTP_200_OK)
+        self.assertEqual(post2.total_likes(), 1)

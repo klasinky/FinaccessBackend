@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from api.permissions import IsAccountOwner, IsPostOwner
 from api.serializers.posts import PostModelSerializer
 from core.models import Post
+from django.core.cache import cache
 
 
 class PostViewSet(mixins.ListModelMixin,
@@ -37,6 +38,15 @@ class PostViewSet(mixins.ListModelMixin,
     def get_queryset(self):
         return Post.objects.filter(is_active=True)
 
+    def create(self, request, *args, **kwargs):
+        if cache.has_key('post_created'):
+            return Response({'detail': 'Tienes que esperar 5 minutos para crear otro post'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        response = super(PostViewSet, self).create(request, *args, **kwargs)
+        if response.status_code == 201:
+            cache.set('post_created', True, timeout=300)
+        return response
+
     def perform_create(self, serializer):
         """Añadir el author del post al momento de crearlo"""
         serializer.save(author=self.request.user)
@@ -60,7 +70,6 @@ class PostViewSet(mixins.ListModelMixin,
 
 
 class PostLikeView(APIView):
-
     permissions_class = [IsAuthenticated, ]
 
     def dispatch(self, request, *args, **kwargs):
@@ -72,10 +81,16 @@ class PostLikeView(APIView):
         serializer_context = {
             'request': request,
         }
+
+        if cache.has_key(f'post_liked{self.post.pk}'):
+            return Response({'detail': 'Tienes que esperar 10 s'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         if request.user in self.post.likes.all():
             self.post.likes.remove(request.user)
         else:
             self.post.likes.add(request.user)
         self.post.save()
+        cache.set(f'post_liked{self.post.pk}', True, timeout=10)
         data = PostModelSerializer(self.post, context=serializer_context).data
         return Response(data, status.HTTP_200_OK)

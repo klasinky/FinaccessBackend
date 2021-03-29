@@ -163,3 +163,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # Slash
 
 APPEND_SLASH = True
+
+# Stock API
+
+STOCK_API_KEY = env('STOCK_API_KEY')
