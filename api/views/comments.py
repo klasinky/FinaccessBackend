@@ -39,7 +39,7 @@ class CommentCreateView(mixins.CreateModelMixin,
         response = super(CommentCreateView, self).create(request, *args, **kwargs)
         if response.status_code == 201:
             cache.set('comment_created', True, timeout=60)
-        return responsegit
+        return response
 
     def perform_create(self, serializer):
         """Añadir el author del comentario al momento de crearlo"""

@@ -124,7 +124,15 @@
             * Eliminar
         + CommentLike
         + PostLike
-        
 
-            
-    
+### :white_check_mark: Lunes 29 de Marzo (3 horas) :white_check_mark:
+    - Creación de Cache
+        + Post Like
+        + Comment Like
+        + Post Create
+        + Comment Create
+        ```
+            Esperar cierto tiempo para volver a ejecutar la misma
+            acción
+        ```
+    - Petición a la API Alpha Vantage (Para las acciones)
