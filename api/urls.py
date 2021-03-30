@@ -1,7 +1,7 @@
 from django.urls import path
 from api.views.categories import list_category
 from api.views.comments import CommentCreateView, CommentDestroyView, CommentListView, CommentLikeView
-from api.views.companystock import CompanyStockData
+from api.views.companystock import CompanyStockListView, CompanyStockView, CompanyListView
 from api.views.entries import EntryCreateView, EntryViewSet, EntryUploadXLS, EntryDownloadXLS
 from api.views.expenses import ExpenseCreateView, ExpenseViewSet, ExpenseUploadXLS, ExpenseDownloadXLS
 from api.views.months import MonthViewSet
@@ -118,6 +118,8 @@ urlpatterns = [
     path('posts/<int:idpost>/comment/all', CommentListView.as_view({'get': 'list'}), name="comments-list"),
     path('comment/<int:id>/like', CommentLikeView.as_view(), name="comments-like"),
 
-    # CompanyStockData
-    path('stock', CompanyStockData.as_view(), name="companystock-data"),
+    # CompanyStockView
+    path('stocks/<int:id>', CompanyStockView.as_view(), name="companystock-view"),
+    path('stocks', CompanyStockListView.as_view(), name="companystock-list"),
+    path('stocks/all', CompanyListView.as_view(), name="companystock-all"),
 ]

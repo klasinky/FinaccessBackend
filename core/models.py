@@ -157,7 +157,7 @@ class Comment(MPTTModel, ModelBase):
 class CompanyStock(ModelBase):
     """CompanyStock, modelo para api de acciones de la bolsa"""
     name = models.CharField('Name', max_length=255)
-    url = models.URLField(max_length=255)
+    symbol = models.CharField('Symbol', max_length=255)
 
 
 class UserCompany(ModelBase):
