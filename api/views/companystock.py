@@ -31,16 +31,21 @@ class CompanyStockView(APIView):
         index = 0
         prices = []
         for item in data:
-            prices.append({
+            if index >= 7:
+                break
+
+            stock_data = {
                 'date': item,
                 'close': data[item].get('4. close')
-            })
+            }
+            prices.append(stock_data)
+            index += 1
         stock = {
             'name': stock_company.companystock.name,
             'prices': prices
         }
 
-        return Response(list(stock), status=status.HTTP_200_OK)
+        return Response(stock, status=status.HTTP_200_OK)
 
     def post(self, request, id):
         """Suscribirse a una acción"""
