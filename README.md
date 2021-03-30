@@ -9,6 +9,19 @@
 - Juan Daniel Padilla Obando (https://github.com/zclut)
 ---
 
+## Instalación :computer:
+```
+pip install -r requirements.txt
+python manage.py migrate
+```
+
+## Test :pencil2:
+```
+python manage.py test
+```
+
+---
+
 ## Bitácora
 
 ### :white_check_mark: Miércoles 17 de Marzo (3 horas) :white_check_mark:
@@ -136,3 +149,12 @@
             acción
         ```
     - Petición a la API Alpha Vantage (Para las acciones)
+
+### :white_check_mark: Martes 30 de Marzo (2 horas) :white_check_mark:
+    - Creación de los Endpoint
+        + Listar todas las acciones disponibles
+        + Suscribirse a una acción
+        + Eliminar una suscripción de una acción
+        + Listar las acciones a la que esta suscrita el usuario
+        + Mostrar los datos del mercado de la compañía
+    - Creación de tests
