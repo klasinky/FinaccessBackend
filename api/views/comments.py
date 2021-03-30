@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework import mixins, viewsets, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -29,6 +30,16 @@ class CommentCreateView(mixins.CreateModelMixin,
             self.parent = None
 
         return super(CommentCreateView, self).dispatch(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        if cache.has_key('comment_created'):
+            return Response({'detail': 'Tienes que esperar 1 minuto para crear otro comentarios'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        response = super(CommentCreateView, self).create(request, *args, **kwargs)
+        if response.status_code == 201:
+            cache.set('comment_created', True, timeout=60)
+        return response
 
     def perform_create(self, serializer):
         """Añadir el author del comentario al momento de crearlo"""
@@ -82,10 +93,16 @@ class CommentLikeView(APIView):
         return super(CommentLikeView, self).dispatch(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
+        if cache.has_key(f'comment_liked{self.comment.pk}'):
+            return Response({'detail': 'Tienes que esperar 10 s'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         if request.user in self.comment.likes.all():
             self.comment.likes.remove(request.user)
         else:
             self.comment.likes.add(request.user)
+
         self.comment.save()
+        cache.set(f'comment_liked{self.comment.pk}', True, timeout=10)
         data = CommentDetailSerializer(self.comment).data
         return Response(data, status.HTTP_200_OK)
