@@ -104,5 +104,8 @@ class CommentLikeView(APIView):
 
         self.comment.save()
         cache.set(f'comment_liked{self.comment.pk}', True, timeout=10)
-        data = CommentDetailSerializer(self.comment).data
+        serializer_context = {
+            'request': request,
+        }
+        data = CommentDetailSerializer(self.comment, context=serializer_context).data
         return Response(data, status.HTTP_200_OK)

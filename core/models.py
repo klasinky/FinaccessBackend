@@ -72,6 +72,8 @@ class UserManager(BaseUserManager):
             username=username
         )
         user.is_superuser = True
+        user.is_staff = True
+
         user.set_password(password)
         user.save(using=self.db)
         return user
@@ -88,6 +90,7 @@ class User(AbstractBaseUser):
         auto_now_add=True)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
