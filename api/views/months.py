@@ -38,12 +38,10 @@ class MonthViewSet(mixins.ListModelMixin,
         return get_object_or_404(
             Month,
             user=self.request.user,
-            pk=self.kwargs['id']
+            pk=self.kwargs['id'],
+            is_active=True
         )
 
-    def perform_destroy(self, instance):
-        instance.soft_delete()
-        instance.save()
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

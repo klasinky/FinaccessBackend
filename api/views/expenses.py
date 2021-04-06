@@ -21,10 +21,6 @@ class ExpenseViewSet(mixins.RetrieveModelMixin,
     lookup_field = "id"
     permission_classes = [IsAuthenticated, IsAmountBaseOwner, ]
 
-    def perform_destroy(self, instance):
-        instance.soft_delete()
-        instance.save()
-
     def get_queryset(self):
         return Expense.objects.filter(month__user=self.request.user, is_active=True)
 

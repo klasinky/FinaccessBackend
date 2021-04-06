@@ -110,7 +110,7 @@ class AmountBase(ModelBase):
     name = models.CharField('Name', max_length=255)
     description = models.TextField('Entry')
     amount = models.FloatField('Amount')
-    month = models.ForeignKey(Month, on_delete=models.PROTECT)
+    month = models.ForeignKey(Month, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
 
     class Meta:
