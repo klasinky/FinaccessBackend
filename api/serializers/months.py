@@ -38,5 +38,5 @@ class MonthModelSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Month
         fields = (
-            'url', 'date', 'total_entries', 'total_expenses'
+            'id','url', 'date', 'total_entries', 'total_expenses'
         )
