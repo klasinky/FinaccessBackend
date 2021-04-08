@@ -1,15 +1,21 @@
 from datetime import datetime
 
 from django.contrib.auth import password_validation, authenticate
+from django.db.models import fields
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework.authtoken.models import Token
-from core.models import User
+from core.models import Currency, User
 
+class CurrencyModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Currency
+        fields = '__all__'
 
 class UserModelSerializer(serializers.ModelSerializer):
     """User model serializer"""
-    # TODO poner un serializer de la divisa
+    currency = CurrencyModelSerializer(read_only=True)
+
     class Meta:
         model = User
         fields = (
