@@ -1,8 +1,8 @@
 from openpyxl import load_workbook, Workbook
 from rest_framework import viewsets, mixins, status
 from rest_framework.generics import get_object_or_404
-from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import HttpResponse
@@ -45,6 +45,7 @@ class AmountBaseCreateView(mixins.CreateModelMixin,
 
 class AmountBaseUploadXLS(APIView):
     parser_classes = (FileUploadParser,)
+
     permission_classes = [IsAuthenticated, IsMonthOwner, ]
     model = None
 
@@ -54,10 +55,13 @@ class AmountBaseUploadXLS(APIView):
         return super(AmountBaseUploadXLS, self).dispatch(request, *args, **kwargs)
 
     def post(self, request, format=None, *args, **kwargs):
+        print("Entra en el post")
         try:
             file_obj = request.data["file"]
+            #file_obj = request.FILES["file"]
             wb = load_workbook(filename=BytesIO(file_obj.read()))
         except Exception as e:
+            print(e)
             return Response({"file": ["Formato incorrecto."]},
                             status=status.HTTP_400_BAD_REQUEST)
 
