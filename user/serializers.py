@@ -24,6 +24,7 @@ class UserModelSerializer(serializers.ModelSerializer):
             'email',
             'last_login',
             'is_active',
+            'currency'
         )
         read_only_fields = (
             'last_login', 'is_active'
