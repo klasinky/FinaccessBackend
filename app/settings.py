@@ -93,7 +93,7 @@ else:
             'PASSWORD': env("DATABASE_PASSWORD"),
             'HOST': env("DATABASE_HOST"),
             'TEST': {
-                'NAME': env("DATABASE_HOST"),
+                'NAME': env("DATABASE_TEST"),
             }
         }
     }

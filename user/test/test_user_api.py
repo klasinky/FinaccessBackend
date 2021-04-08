@@ -43,10 +43,9 @@ class UserPublicAPITest(TestCase):
 
     def test_create_valid_user(self):
         """Test crear un usuario valido"""
-
         res = self.client.post(CREATE_USER_URL, self.payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        user = get_user_model().objects.get(**res.data)
+        user = get_user_model().objects.get(username=self.payload['username'])
         self.assertTrue(user.check_password(self.payload['password']))
         self.assertNotIn('password', res.data)
 

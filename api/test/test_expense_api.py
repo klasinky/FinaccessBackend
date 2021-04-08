@@ -115,12 +115,11 @@ class ExpensePrivateAPITests(TestCase):
         self.assertEqual(expense.description, res.data['description'])
         self.assertEqual(expense.amount, res.data['amount'])
 
-    def test_soft_delete_expense(self):
+    def test_delete_expense(self):
         """Elimina un gasto realizado"""
         res_month = self.client.post(CREATE_LIST_MONTH_URL, {})
         id = res_month.data['url'].split("/")[-1]
         expense = create_expense(id);
         res = self.client.delete(get_expense_url(expense.pk))
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-        expense.refresh_from_db()
-        self.assertFalse(expense.is_active)
+        self.assertEqual(Expense.objects.all().count(), 0)

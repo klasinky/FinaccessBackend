@@ -59,14 +59,13 @@ class MonthPrivateAPITests(TestCase):
         res2 = self.client.post(CREATE_LIST_MONTH_URL, {})
         self.assertEqual(res2.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_soft_delete_month(self):
+    def test_delete_month(self):
         """Eliminar un mes"""
         res_month = self.client.post(CREATE_LIST_MONTH_URL, {})
         id = res_month.data['url'].split("/")[-1]
         res = self.client.delete(get_month_url(id))
-        month = Month.objects.get(pk=id)
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(month.is_active)
+        self.assertEqual(Month.objects.all().count(),0)
 
     def test_retrieve_month(self):
         """Consigue la información de un mes"""

@@ -7,6 +7,7 @@ from rest_framework.validators import UniqueValidator
 from rest_framework.authtoken.models import Token
 from core.models import Currency, User
 
+
 class CurrencyModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency

@@ -113,12 +113,11 @@ class EntryPrivateAPITests(TestCase):
         self.assertEqual(entry.description, res.data['description'])
         self.assertEqual(entry.amount, res.data['amount'])
 
-    def test_soft_delete_entry(self):
+    def test_delete_entry(self):
         """Elimina un ingreso realizado"""
         res_month = self.client.post(CREATE_LIST_MONTH_URL, {})
         id = res_month.data['url'].split("/")[-1]
         entry = create_entry(id);
         res = self.client.delete(get_entry_url(entry.pk))
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-        entry.refresh_from_db()
-        self.assertFalse(entry.is_active)
+        self.assertEqual(Entry.objects.all().count(), 0)
