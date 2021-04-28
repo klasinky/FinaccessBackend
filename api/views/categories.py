@@ -5,7 +5,7 @@ from api.serializers.categories import CategoryModelSerializer
 from core.models import Category
 
 
-class list_category(APIView):
+class CategoryAPIView(APIView):
 
     def get(self, request):
         categories = Category.objects.all()

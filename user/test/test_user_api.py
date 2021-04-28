@@ -20,12 +20,8 @@ DELETE_USER_URL = reverse('users-soft')
 CHANGE_PASSWORD_URL = reverse('users-changepassword')
 
 
-def get_profile_url(username):
-    return reverse('users-profile', args=[username])
-
-
-def get_detail_url(username):
-    return reverse('users-detail', args=[username])
+def get_profile_url():
+    return reverse('users-profile')
 
 
 class UserPublicAPITest(TestCase):
@@ -69,7 +65,7 @@ class UserPublicAPITest(TestCase):
     def test_profile_fail_not_credentials(self):
         """Comprobar que no se pueda acceder
         a un perfil sin estar autenticado"""
-        profile_url = get_profile_url(self.payload['username'])
+        profile_url = get_profile_url()
         res = self.client.get(profile_url)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -100,7 +96,7 @@ class UserPrivateAPITests(TestCase):
 
     def test_user_profile(self):
         """Consigue la información del usuario"""
-        profile_url = get_profile_url(self.payload['username'])
+        profile_url = get_profile_url()
         res = self.client.get(profile_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['username'], self.user.username)
@@ -111,7 +107,7 @@ class UserPrivateAPITests(TestCase):
             'username': "maju2",
             'name': "Manuel Juan",
         }
-        detail_url = get_detail_url(self.payload['username'])
+        detail_url = get_profile_url()
         res = self.client.patch(detail_url, payload)
         self.user.refresh_from_db()
         self.assertEqual(self.user.username, payload['username'])

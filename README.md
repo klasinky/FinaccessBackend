@@ -158,3 +158,8 @@ python manage.py test
         + Listar las acciones a la que esta suscrita el usuario
         + Mostrar los datos del mercado de la compañía
     - Creación de tests
+
+### :white_check_mark: Mircoles 28 de Abril (1 hora) :white_check_mark:
+    - Creación del Endpoint para las Currency
+    - Refactor en el Endpoint de Profile
+    

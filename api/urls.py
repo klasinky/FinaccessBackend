@@ -1,7 +1,8 @@
 from django.urls import path
-from api.views.categories import list_category
+from api.views.categories import CategoryAPIView
 from api.views.comments import CommentCreateView, CommentDestroyView, CommentListView, CommentLikeView
 from api.views.companystock import CompanyStockListView, CompanyStockView, CompanyListView
+from api.views.currency import CurrencyAPIView
 from api.views.entries import EntryCreateView, EntryViewSet, EntryUploadXLS, EntryDownloadXLS
 from api.views.expenses import ExpenseCreateView, ExpenseViewSet, ExpenseUploadXLS, ExpenseDownloadXLS
 from api.views.months import MonthViewSet
@@ -87,7 +88,7 @@ urlpatterns = [
     path('months/<int:id>/category/stats/entry', category_entry_stats, name='months-stats-category-entry'),
 
     # Category
-    path('categories/all', list_category.as_view(), name="category-all"),
+    path('categories/all', CategoryAPIView.as_view(), name="category-all"),
 
     # Expense
     path('months/<int:id>/create/expense', expense_create, name="expenses"),
@@ -122,4 +123,7 @@ urlpatterns = [
     path('stocks/<int:id>', CompanyStockView.as_view(), name="companystock-view"),
     path('stocks', CompanyStockListView.as_view(), name="companystock-list"),
     path('stocks/all', CompanyListView.as_view(), name="companystock-all"),
+
+    # Currency
+    path('currencies', CurrencyAPIView.as_view(), name="currency")
 ]

@@ -16,11 +16,14 @@ class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     serializer_class = UserModelSerializer
     lookup_field = "username"
 
+    def get_object(self):
+        return self.request.user
+
     def get_permissions(self):
         if self.action in ['register', 'login', ]:
             permissions = [AllowAny]
 
-        elif self.action in ['detail', 'update', 'partial_update']:
+        elif self.action in ['detail', 'update', 'partial_update','profile']:
             permissions = [IsAuthenticated, IsAccountOwner, ]
 
         else:

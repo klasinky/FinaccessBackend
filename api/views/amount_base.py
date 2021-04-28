@@ -58,7 +58,6 @@ class AmountBaseUploadXLS(APIView):
         print("Entra en el post")
         try:
             file_obj = request.data["file"]
-            #file_obj = request.FILES["file"]
             wb = load_workbook(filename=BytesIO(file_obj.read()))
         except Exception as e:
             print(e)

@@ -10,6 +10,8 @@ def create_currency(apps, schema_editor):
     euro = currency_model.objects.create(name="Euro", symbol="€")
     euro.save()
 
+
+# noinspection DuplicatedCode
 class Migration(migrations.Migration):
 
 
