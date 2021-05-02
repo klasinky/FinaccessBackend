@@ -159,7 +159,9 @@ python manage.py test
         + Mostrar los datos del mercado de la compañía
     - Creación de tests
 
-### :white_check_mark: Mircoles 28 de Abril (1 hora) :white_check_mark:
+### :white_check_mark: Miércoles 28 de Abril (1 hora) :white_check_mark:
     - Creación del Endpoint para las Currency
     - Refactor en el Endpoint de Profile
-    
+
+### :white_check_mark: Domingo 2 de Mayo (30 minutos) :white_check_mark:
+    - Ordenar los comentarios
