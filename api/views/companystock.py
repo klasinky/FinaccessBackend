@@ -50,7 +50,7 @@ class CompanyStockView(APIView):
     def post(self, request, id):
         """Suscribirse a una acción"""
         company = get_object_or_404(CompanyStock, id=id)
-        if UserCompany.objects.filter(user=request.user).exists():
+        if UserCompany.objects.filter(user=request.user, companystock=company).exists():
             return Response({'detail': 'Ya estas suscrito a esa acción'},
                             status=status.HTTP_400_BAD_REQUEST)
 
@@ -78,7 +78,7 @@ class CompanyStockListView(APIView):
             url = reverse('companystock-view', args=[item.companystock.pk])
 
             stock = {
-                'id': item.companystock.pk,
+                'id': item.pk,
                 'name': item.companystock.name,
                 'url': request.build_absolute_uri(url)
             }
