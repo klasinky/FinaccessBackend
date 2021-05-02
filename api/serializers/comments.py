@@ -21,7 +21,7 @@ class CommentDetailSerializer(serializers.ModelSerializer):
                                         min_length=10,
                                         max_length=500,
                                         read_only=True)
-
+    created_at = serializers.DateTimeField(read_only=True)
     author = UserModelSerializer()
     parent = serializers.SerializerMethodField(read_only=True)
     likes = serializers.SerializerMethodField(read_only=True)
@@ -43,4 +43,4 @@ class CommentDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('description', 'author', 'parent', 'likes', 'url_like')
+        fields = ('description', 'author', 'parent', 'likes', 'url_like','created_at')

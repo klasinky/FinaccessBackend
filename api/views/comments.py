@@ -32,9 +32,9 @@ class CommentCreateView(mixins.CreateModelMixin,
         return super(CommentCreateView, self).dispatch(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
-        if cache.has_key('comment_created'):
-            return Response({'detail': 'Tienes que esperar 1 minuto para crear otro comentarios'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        # if cache.has_key('comment_created'):
+        #     return Response({'detail': 'Tienes que esperar 1 minuto para crear otro comentarios'},
+        #                     status=status.HTTP_400_BAD_REQUEST)
 
         response = super(CommentCreateView, self).create(request, *args, **kwargs)
         if response.status_code == 201:
@@ -80,7 +80,21 @@ class CommentListView(mixins.ListModelMixin,
         return super(CommentListView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return Comment.objects.filter(post=self.post_model, is_active=True)
+        comments = Comment.objects.filter(post=self.post_model, is_active=True)
+        return comments.order_by("-created_at")
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            serializer_data = sorted(serializer.data, key=lambda k: k['created_at'], reverse=False)
+            return self.get_paginated_response(serializer_data)
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data)
 
 
 class CommentLikeView(APIView):

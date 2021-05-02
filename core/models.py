@@ -156,6 +156,9 @@ class Comment(MPTTModel, ModelBase):
     def total_likes(self):
         return self.likes.count()
 
+    class Meta:
+        ordering = ('-created_at',)
+
 
 class CompanyStock(ModelBase):
     """CompanyStock, modelo para api de acciones de la bolsa"""
