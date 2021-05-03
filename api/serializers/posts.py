@@ -15,6 +15,11 @@ class PostModelSerializer(serializers.HyperlinkedModelSerializer):
     author = UserModelSerializer(read_only=True)
     likes = serializers.SerializerMethodField(read_only=True)
     url_like = serializers.SerializerMethodField()
+    is_like = serializers.SerializerMethodField()
+
+    def get_is_like(self, obj):
+        request = self.context.get('request')
+        return request.user in obj.likes.all()
 
     def get_url_like(self, obj):
         request = self.context.get('request')
@@ -27,5 +32,5 @@ class PostModelSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
         fields = (
-            'url', 'title', 'description', 'finished', 'author', 'likes', 'url_like'
+            'url', 'title', 'description', 'finished', 'author', 'likes', 'url_like','is_like'
         )
