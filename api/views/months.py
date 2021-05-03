@@ -1,5 +1,5 @@
 from django.db.models import Q
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
@@ -18,7 +18,6 @@ class MonthViewSet(mixins.ListModelMixin,
                    mixins.DestroyModelMixin,
                    mixins.CreateModelMixin,
                    viewsets.GenericViewSet):
-
     serializer_class = MonthModelSerializer
     lookup_field = "id"
 
@@ -41,7 +40,6 @@ class MonthViewSet(mixins.ListModelMixin,
             pk=self.kwargs['id'],
             is_active=True
         )
-
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -66,14 +64,14 @@ class MonthViewSet(mixins.ListModelMixin,
                                                           context=serializer_context,
                                                           month=instance)
             data = {
-                'category':  category_serializer.data,
+                'category': category_serializer.data,
                 'category_data': {
-                        'expenses': ExpenseModelSerializer(expenses,
-                                                           many=True,
-                                                           context=serializer_context).data,
-                        'entries': EntryModelSerializer(entries,
-                                                        many=True,
-                                                        context=serializer_context).data,
+                    'expenses': ExpenseModelSerializer(expenses,
+                                                       many=True,
+                                                       context=serializer_context).data,
+                    'entries': EntryModelSerializer(entries,
+                                                    many=True,
+                                                    context=serializer_context).data,
                 }
             }
 
@@ -129,3 +127,24 @@ class MonthViewSet(mixins.ListModelMixin,
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @action(detail=True, methods=['GET'])
+    def get_amount_base_all(self, request, *args, **kwargs):
+        month = self.get_object()
+        entries = Entry.objects.filter(month=month, is_active=True)
+        expenses = Expense.objects.filter(month=month, is_active=True)
+        results = []
+        serializer_context = {
+            'request': request,
+        }
+        for entry in entries:
+            results.append({
+                'data': EntryModelSerializer(entry, context=serializer_context).data,
+                'is_expense': False,
+            })
+        for expense in expenses:
+            results.append({
+                'data': ExpenseModelSerializer(expense, context=serializer_context).data,
+                'is_expense': True,
+            })
+        results = sorted(results, key=lambda k: k['data']['created_at'])
+        return Response(results, status=status.HTTP_200_OK)

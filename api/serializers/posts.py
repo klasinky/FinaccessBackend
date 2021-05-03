@@ -32,5 +32,5 @@ class PostModelSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
         fields = (
-            'url', 'title', 'description', 'finished', 'author', 'likes', 'url_like','is_like'
+            'id' ,'url', 'title', 'description', 'finished', 'author', 'likes', 'url_like','is_like'
         )

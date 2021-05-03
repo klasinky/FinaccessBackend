@@ -137,6 +137,7 @@ python manage.py test
             * Eliminar
         + CommentLike
         + PostLike
+---
 
 ### :white_check_mark: Lunes 29 de Marzo (3 horas) :white_check_mark:
     - Creación de Cache
@@ -149,6 +150,7 @@ python manage.py test
             acción
         ```
     - Petición a la API Alpha Vantage (Para las acciones)
+---
 
 ### :white_check_mark: Martes 30 de Marzo (2 horas) :white_check_mark:
     - Creación de los Endpoint
@@ -158,10 +160,18 @@ python manage.py test
         + Listar las acciones a la que esta suscrita el usuario
         + Mostrar los datos del mercado de la compañía
     - Creación de tests
+---
 
 ### :white_check_mark: Miércoles 28 de Abril (1 hora) :white_check_mark:
     - Creación del Endpoint para las Currency
     - Refactor en el Endpoint de Profile
+---
 
 ### :white_check_mark: Domingo 2 de Mayo (30 minutos) :white_check_mark:
     - Ordenar los comentarios
+---
+
+### :white_check_mark: Lunes 3 de Mayo (30 minutos) :white_check_mark:
+    - Nuevo Endpoint = Listar todos los amount del mes
+    - Arreglar el cache a los likes, post y comentarios
+---

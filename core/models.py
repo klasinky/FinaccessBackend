@@ -17,7 +17,7 @@ class ModelBase(models.Model):
 
     class Meta:
         abstract = True
-
+        ordering = ("-created_at",)
 
 class Currency(ModelBase):
     """Currency, modelo para divisas"""

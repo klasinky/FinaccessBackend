@@ -31,6 +31,10 @@ category_entry_stats = MonthViewSet.as_view({
     'get': 'category_entries_stats'
 })
 
+list_amount_month = MonthViewSet.as_view({
+    'get': 'get_amount_base_all'
+})
+
 # Expense
 
 expense_create = ExpenseCreateView.as_view({
@@ -84,6 +88,7 @@ urlpatterns = [
     path('months', month_create, name="months"),
     path('months/all', month_list, name="months-list"),
     path('months/<int:id>', month_viewset, name='months-viewset'),
+    path('months/<int:id>/amounts', list_amount_month, name='months-amount-list'),
     path('months/<int:id>/category/stats/expense', category_expense_stats, name='months-stats-category-expense'),
     path('months/<int:id>/category/stats/entry', category_entry_stats, name='months-stats-category-entry'),
 
