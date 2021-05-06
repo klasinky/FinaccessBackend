@@ -10,7 +10,8 @@ class CategoryModelSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         max_length=255,
         min_length=2,
-        required=True)
+        required=True,
+        read_only=True)
     total_entries = SerializerMethodField(read_only=True)
     total_expenses = SerializerMethodField(read_only=True)
 
@@ -34,4 +35,18 @@ class CategoryModelSerializer(serializers.ModelSerializer):
         model = Category
         fields = (
             'id', 'name', 'total_entries', 'total_expenses'
+        )
+
+
+class CategoryInfoSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(
+        max_length=255,
+        min_length=2,
+        required=True,
+        read_only=True)
+
+    class Meta:
+        model = Category
+        fields = (
+            'id', 'name',
         )

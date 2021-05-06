@@ -11,5 +11,5 @@ class EntryModelSerializer(AmountBaseModelSerializer):
     class Meta:
         model = Entry
         fields = (
-            'url', 'name', 'description', 'amount', 'created_at', 'id'
+            'url', 'name', 'description', 'amount', 'created_at', 'id', 'category'
         )
