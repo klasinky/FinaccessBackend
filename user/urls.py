@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserViewSet
+from .views import UserViewSet, UserCheckAuthenticated
 
 user_login = UserViewSet.as_view({
     'post': 'login'
@@ -28,5 +28,6 @@ urlpatterns = [
     path('register', user_register, name="users-register"),
     path('me/', user_profile, name="users-profile"),
     path('me/delete', user_delete, name='users-soft'),
-    path('me/changepassword', user_change_password, name='users-changepassword')
+    path('me/changepassword', user_change_password, name='users-changepassword'),
+    path('check', UserCheckAuthenticated.as_view(), name="user-check-authenticated")
 ]

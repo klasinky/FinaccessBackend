@@ -17,7 +17,7 @@ flake8==3.9.0
 idna==2.10
 inflection==0.5.1
 itypes==1.2.0
-Jinja2==2.11.3
+# Jinja2==2.11.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
 openpyxl==3.0.7
@@ -34,4 +34,7 @@ sqlparse==0.4.1
 uritemplate==3.0.1
 urllib3==1.26.4
 #Para CircleCI
-psycopg2==2.8.6
+# psycopg2==2.8.6
+#Docker
+psycopg2-binary>=2.8
+# psycopg2-binary>=2.8

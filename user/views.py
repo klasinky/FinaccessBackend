@@ -2,6 +2,7 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from core.models import User
 from user.permissions import IsAccountOwner
@@ -91,3 +92,11 @@ class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
         return Response({'message': 'Contraseña actualizada correctamente'},
                         status=status.HTTP_200_OK)
+
+
+class UserCheckAuthenticated(APIView):
+
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request):
+        return Response(status=status.HTTP_200_OK)

@@ -8,6 +8,7 @@ __pycache__/
 
 # Ideavs
 .idea
+.run
 .vscode
 # Distribution / packaging
 .Python

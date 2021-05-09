@@ -1,3 +1,6 @@
+import datetime
+
+from django.db.models import Q, Count
 from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -7,7 +10,7 @@ from rest_framework.views import APIView
 
 from api.permissions import IsAccountOwner, IsPostOwner
 from api.serializers.posts import PostModelSerializer
-from core.models import Post
+from core.models import Post, PostLike
 from django.core.cache import cache
 
 
@@ -36,6 +39,25 @@ class PostViewSet(mixins.ListModelMixin,
         )
 
     def get_queryset(self):
+        """
+        Lista todos los post. filtra por la cantidad de likes
+        hot = post con mas likes en el dia
+        top = post con mas likes
+        """
+        sorting = self.request.query_params.get('sort')
+        query = Q()
+        if sorting is not None:
+            if sorting == 'hot':
+                week_end = datetime.datetime.now()
+                week_start = week_end - datetime.timedelta(days=7)
+                post_likes = PostLike.objects.filter(created_at__gte=week_start)
+                query = Q(postlike__in=post_likes)
+
+            post_list = Post.objects.annotate(num_likes=Count(
+                'likes', filter=query
+            )).filter(is_active=True).order_by('num_likes')
+            return post_list
+
         return Post.objects.filter(is_active=True)
 
     def create(self, request, *args, **kwargs):
@@ -88,9 +110,12 @@ class PostLikeView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         if request.user in self.post.likes.all():
-            self.post.likes.remove(request.user)
+            like = PostLike.objects.get(post=self.post, user=request.user)
+            like.delete()
+            like.save()
         else:
-            self.post.likes.add(request.user)
+            like = PostLike.objects.create(post=self.post, user=request.user)
+            like.save()
         self.post.save()
         cache.set(cache_key, True, timeout=10)
         data = PostModelSerializer(self.post, context=serializer_context).data

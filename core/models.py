@@ -137,11 +137,16 @@ class Post(ModelBase):
     title = models.CharField('Title', max_length=255)
     description = models.TextField()
     finished = models.BooleanField(default=False)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    likes = models.ManyToManyField(User, related_name='post_like')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post_author')
+    likes = models.ManyToManyField(User, through='PostLike',)
 
     def total_likes(self):
         return self.likes.count()
+
+
+class PostLike(ModelBase):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Comment(MPTTModel, ModelBase):

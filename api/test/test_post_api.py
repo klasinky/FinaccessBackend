@@ -81,7 +81,6 @@ class PostPrivateAPITest(TestCase):
         res2 = self.client.post(CREATE_POST_URL, payload)
         self.assertEqual(res2.status_code, status.HTTP_400_BAD_REQUEST)
 
-
     def test_retrieve_post(self):
         """Obtener un post"""
         post = create_post(self.user)
@@ -207,3 +206,9 @@ class PostPrivateAPITest(TestCase):
         self.assertEqual(post.total_likes(), 1)
         self.assertEqual(res2.status_code, status.HTTP_200_OK)
         self.assertEqual(post2.total_likes(), 1)
+
+    def test_list_posts_with_sort(self):
+        res = self.client.get(f'{CREATE_POST_URL}?sort=hot')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        res2 = self.client.get(f'{CREATE_POST_URL}?sort=top')
+        self.assertEqual(res2.status_code, status.HTTP_200_OK)
