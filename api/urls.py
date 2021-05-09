@@ -5,7 +5,7 @@ from api.views.companystock import CompanyStockListView, CompanyStockView, Compa
 from api.views.currency import CurrencyAPIView
 from api.views.entries import EntryCreateView, EntryViewSet, EntryUploadXLS, EntryDownloadXLS
 from api.views.expenses import ExpenseCreateView, ExpenseViewSet, ExpenseUploadXLS, ExpenseDownloadXLS
-from api.views.months import MonthViewSet
+from api.views.months import MonthViewSet, MonthOverView
 from api.views.posts import PostViewSet, PostLikeView
 
 # Month
@@ -22,6 +22,7 @@ month_viewset = MonthViewSet.as_view({
     'get': 'retrieve',
     'delete': 'destroy'
 })
+
 
 category_expense_stats = MonthViewSet.as_view({
     'get': 'category_expenses_stats'
@@ -87,6 +88,7 @@ urlpatterns = [
     # Months
     path('months', month_create, name="months"),
     path('months/all', month_list, name="months-list"),
+    path('months/overview', MonthOverView.as_view(), name="months-overview"),
     path('months/<int:id>', month_viewset, name='months-viewset'),
     path('months/<int:id>/amounts', list_amount_month, name='months-amount-list'),
     path('months/<int:id>/category/stats/expense', category_expense_stats, name='months-stats-category-expense'),

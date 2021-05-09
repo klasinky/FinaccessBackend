@@ -1,8 +1,12 @@
-from django.db.models import Q
+import datetime
+
+from django.db.models import Q, Sum
 from rest_framework import viewsets, mixins, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
+from rest_framework.views import APIView
+
 from api.permissions import IsAccountOwner
 from api.serializers.categories import CategoryModelSerializer
 from api.serializers.entries import EntryModelSerializer
@@ -127,6 +131,7 @@ class MonthViewSet(mixins.ListModelMixin,
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
     @action(detail=True, methods=['GET'])
     def get_amount_base_all(self, request, *args, **kwargs):
         month = self.get_object()
@@ -148,3 +153,42 @@ class MonthViewSet(mixins.ListModelMixin,
             })
         results = sorted(results, key=lambda k: k['data']['created_at'])
         return Response(results, status=status.HTTP_200_OK)
+
+
+class MonthOverView(APIView):
+
+    permission_classes = [IsAuthenticated,]
+
+
+    def get(self, request, *args, **kwargs):
+        """
+        Calcula los ingresos y gastos, filtra por
+        el mes  y el año actual y de por vida.
+        """
+        filter_query = request.query_params.get('q')
+        query = Q()
+        if filter_query:
+            today = datetime.datetime.now()
+            if filter_query == 'month':
+                query.add(Q(date__year=today.year), Q.AND)
+                query.add(Q(date__month=today.month), Q.AND)
+            if filter_query == 'year':
+                query.add(Q(date__year=today.year), Q.AND)
+
+        month_data = Month.objects.filter(query, Q(is_active=True), Q(user=request.user))
+        total_entries = 0
+        total_expenses = 0
+        for month in month_data:
+            entries = Entry.objects.filter(month=month).\
+                aggregate(Sum('amount'))
+            total_entries += entries['amount__sum'] or 0
+            expenses = Expense.objects.filter(month=month). \
+                aggregate(Sum('amount'))
+            total_expenses += expenses['amount__sum'] or 0
+
+        data = {
+            'total_expenses': total_expenses,
+            'total_entries': total_entries
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
