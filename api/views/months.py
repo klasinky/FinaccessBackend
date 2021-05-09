@@ -171,7 +171,6 @@ class MonthViewSet(mixins.ListModelMixin,
         current_entries_global = 0
         previous_expense_global = 0
         previous_entries_global = 0
-
         if last_month_count > 0:
             previous_month = Month.objects.filter(
                 date__month=last_month_date.month,
@@ -193,47 +192,60 @@ class MonthViewSet(mixins.ListModelMixin,
                 current_expense_global += total_current_expenses
                 previous_entries_global += total_previous_entries
                 previous_expense_global += total_previous_expenses
-
                 # Expenses
-                increase_expenses = (total_current_expenses - total_previous_expenses) * 100
                 try:
-                    increase_expenses = round(increase_expenses / total_previous_expenses, 2)
+                    increase_expenses = (total_current_expenses - total_previous_expenses) / total_previous_expenses
+                    increase_expenses = round(increase_expenses * 100, 2)
                 except ZeroDivisionError:
-                    increase_expenses = 100
+                    if total_current_expenses > 0:
+                        increase_expenses = 100
+                    else:
+                        increase_expenses = 0
+
                 # Entries
-                increase_entries = ((total_current_entries - total_previous_entries) * 100)
                 try:
-                    increase_entries = round(increase_entries / total_previous_entries, 2)
+                    increase_entries = (total_current_entries - total_previous_entries) / total_previous_entries
+                    increase_entries = round(increase_entries * 100, 2)
                 except ZeroDivisionError:
-                    increase_entries = 100
+                    if total_current_entries > 0:
+                        increase_entries = 100
+                    else:
+                        increase_entries = 0
 
                 data.append({
                     'category': category_name,
                     'increase_expenses': increase_expenses,
                     'increase_entries': increase_entries
                 })
+        else:
+            for i in range(0, len(current_month_entries)):
+                category_name = current_month_expenses[i]['name']
+                current_expense_global += current_month_expenses[i]['total']
+                current_entries_global += current_month_entries[i]['total']
+
+                data.append({
+                    'category': category_name,
+                    'increase_expenses': 100,
+                    'increase_entries': 100
+                })
+
+        try:
+            increase_global_entries = (current_entries_global - previous_entries_global) / previous_entries_global
+            increase_global_entries = round(increase_global_entries * 100, 2)
+        except ZeroDivisionError:
+            if current_entries_global > 0:
+                increase_global_entries = 100
             else:
-                for i in range(0, len(current_month_entries)):
-                    category_name = current_month_expenses[i]['name']
-                    current_expense_global += current_month_expenses[i]['total']
-                    current_entries_global += current_month_entries[i]['total']
+                increase_global_entries = 0
 
-                    data.append({
-                        'category': category_name,
-                        'increase_expenses': 100,
-                        'increase_entries': 100
-                    })
-        increase_global_entries = (current_entries_global - previous_entries_global) * 100
         try:
-            increase_global_entries = round(increase_global_entries / previous_entries_global, 2)
+            increase_global_expenses = (current_expense_global - previous_expense_global) / previous_expense_global
+            increase_global_expenses = round(increase_global_expenses * 100, 2)
         except ZeroDivisionError:
-            increase_global_entries = 100
-
-        increase_global_expenses = (current_expense_global - previous_expense_global) * 100
-        try:
-            increase_global_expenses = round(increase_global_expenses / previous_expense_global, 2)
-        except ZeroDivisionError:
-            increase_global_expenses = 100
+            if current_expense_global > 0:
+                increase_global_expenses = 100
+            else:
+                increase_global_expenses = 0
 
         result = {
             'increase_expenses': increase_global_expenses,
