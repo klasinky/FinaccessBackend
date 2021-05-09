@@ -92,7 +92,7 @@ class MonthViewSet(mixins.ListModelMixin,
         """
             https://stackoverflow.com/questions/38778080/pass-kwargs-into-django-filter
         """
-        categories = Category.objects.filter(**filter_category).distinct()
+        categories = Category.objects.all()
         data = []
         total = 0
         model = apps.get_model('core', model_name)
@@ -108,7 +108,7 @@ class MonthViewSet(mixins.ListModelMixin,
             })
             total = 0
 
-        return Response(list(data))
+        return list(data)
 
     @action(detail=True, methods=['GET'])
     def category_expenses_stats(self, request, *args, **kwargs):
@@ -117,7 +117,7 @@ class MonthViewSet(mixins.ListModelMixin,
         your_filters = {
             'expense__month__pk': instance.pk,
         }
-        return self.get_amount_stats(your_filters, instance, 'expense')
+        return Response(self.get_amount_stats(your_filters, instance, 'expense'))
 
     @action(detail=True, methods=['GET'])
     def category_entries_stats(self, request, *args, **kwargs):
@@ -126,11 +126,10 @@ class MonthViewSet(mixins.ListModelMixin,
         your_filters = {
             'entry__month__pk': instance.pk,
         }
-        return self.get_amount_stats(your_filters, instance, 'entry')
+        return Response(self.get_amount_stats(your_filters, instance, 'entry'))
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
 
     @action(detail=True, methods=['GET'])
     def get_amount_base_all(self, request, *args, **kwargs):
@@ -154,11 +153,98 @@ class MonthViewSet(mixins.ListModelMixin,
         results = sorted(results, key=lambda k: k['data']['created_at'])
         return Response(results, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=['GET'])
+    def get_analysis(self, request, *args, **kwargs):
+        current_month = self.get_object()
+        current_month_expenses = self.get_amount_stats('', current_month, 'expense')
+        current_month_entries = self.get_amount_stats('', current_month, 'entry')
+        date = current_month.date
+        date = date.replace(day=1)
+        last_month_date = date - datetime.timedelta(days=1)
+        last_month_count = Month.objects.filter(
+            date__month=last_month_date.month,
+            date__year=last_month_date.year
+        ).count()
+        data = []
+        # Variables para tomar el total (No por categoria)
+        current_expense_global = 0
+        current_entries_global = 0
+        previous_expense_global = 0
+        previous_entries_global = 0
+
+        if last_month_count > 0:
+            previous_month = Month.objects.filter(
+                date__month=last_month_date.month,
+                date__year=last_month_date.year
+            )[0]
+            previous_month_expenses = self.get_amount_stats('', previous_month, 'expense')
+            previous_month_entries = self.get_amount_stats('', previous_month, 'entry')
+
+            for i in range(0, len(current_month_entries)):
+                category_name = current_month_expenses[i]['name']
+                total_current_expenses = current_month_expenses[i]['total']
+                total_previous_expenses = previous_month_expenses[i]['total']
+
+                total_current_entries = current_month_entries[i]['total']
+                total_previous_entries = previous_month_entries[i]['total']
+
+                # Estadisticas globales
+                current_entries_global += total_current_entries
+                current_expense_global += total_current_expenses
+                previous_entries_global += total_previous_entries
+                previous_expense_global += total_previous_expenses
+
+                # Expenses
+                increase_expenses = (total_current_expenses - total_previous_expenses) * 100
+                try:
+                    increase_expenses = round(increase_expenses / total_previous_expenses, 2)
+                except ZeroDivisionError:
+                    increase_expenses = 100
+                # Entries
+                increase_entries = ((total_current_entries - total_previous_entries) * 100)
+                try:
+                    increase_entries = round(increase_entries / total_previous_entries, 2)
+                except ZeroDivisionError:
+                    increase_entries = 100
+
+                data.append({
+                    'category': category_name,
+                    'increase_expenses': increase_expenses,
+                    'increase_entries': increase_entries
+                })
+            else:
+                for i in range(0, len(current_month_entries)):
+                    category_name = current_month_expenses[i]['name']
+                    current_expense_global += current_month_expenses[i]['total']
+                    current_entries_global += current_month_entries[i]['total']
+
+                    data.append({
+                        'category': category_name,
+                        'increase_expenses': 100,
+                        'increase_entries': 100
+                    })
+        increase_global_entries = (current_entries_global - previous_entries_global) * 100
+        try:
+            increase_global_entries = round(increase_global_entries / previous_entries_global, 2)
+        except ZeroDivisionError:
+            increase_global_entries = 100
+
+        increase_global_expenses = (current_expense_global - previous_expense_global) * 100
+        try:
+            increase_global_expenses = round(increase_global_expenses / previous_expense_global, 2)
+        except ZeroDivisionError:
+            increase_global_expenses = 100
+
+        result = {
+            'increase_expenses': increase_global_expenses,
+            'increase_entries': increase_global_entries,
+            'categories': data
+        }
+        return Response(result, 200)
+
 
 class MonthOverView(APIView):
-
-    permission_classes = [IsAuthenticated,]
-
+    permission_classes = [IsAuthenticated, ]
 
     def get(self, request, *args, **kwargs):
         """
@@ -179,7 +265,7 @@ class MonthOverView(APIView):
         total_entries = 0
         total_expenses = 0
         for month in month_data:
-            entries = Entry.objects.filter(month=month).\
+            entries = Entry.objects.filter(month=month). \
                 aggregate(Sum('amount'))
             total_entries += entries['amount__sum'] or 0
             expenses = Expense.objects.filter(month=month). \
