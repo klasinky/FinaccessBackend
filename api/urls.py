@@ -23,6 +23,9 @@ month_viewset = MonthViewSet.as_view({
     'delete': 'destroy'
 })
 
+month_analysis = MonthViewSet.as_view({
+    'get': 'get_analysis'
+})
 
 category_expense_stats = MonthViewSet.as_view({
     'get': 'category_expenses_stats'
@@ -90,6 +93,7 @@ urlpatterns = [
     path('months/all', month_list, name="months-list"),
     path('months/overview', MonthOverView.as_view(), name="months-overview"),
     path('months/<int:id>', month_viewset, name='months-viewset'),
+    path('months/<int:id>/analysis', month_analysis, name='months-analysis'),
     path('months/<int:id>/amounts', list_amount_month, name='months-amount-list'),
     path('months/<int:id>/category/stats/expense', category_expense_stats, name='months-stats-category-expense'),
     path('months/<int:id>/category/stats/entry', category_entry_stats, name='months-stats-category-entry'),

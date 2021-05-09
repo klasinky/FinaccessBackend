@@ -175,3 +175,10 @@ python manage.py test
     - Nuevo Endpoint = Listar todos los amount del mes
     - Arreglar el cache a los likes, post y comentarios
 ---
+### :white_check_mark: Sábado 8 de Mayo (1 hora) :white_check_mark:
+    - Endpoint para verificar si el usuario está autenticado
+---
+### :white_check_mark: Domingo 9 de Mayo (2 horas) :white_check_mark:
+    - Filtros del Overview
+    - Análisis del mes
+---
