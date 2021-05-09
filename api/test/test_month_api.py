@@ -23,6 +23,7 @@ def get_month_url(id):
 
 LOGIN_USER_URL = reverse('users-login')
 CREATE_LIST_MONTH_URL = reverse('months')
+MONTH_OVERVIEW_URL = reverse('months-overview')
 
 
 class MonthPrivateAPITests(TestCase):
@@ -76,3 +77,7 @@ class MonthPrivateAPITests(TestCase):
         date = f"{month.date.year}-{month.date.month:02d}"
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['month']['date'], date)
+
+    def test_month_overview(self):
+        res = self.client.get(f'{MONTH_OVERVIEW_URL}?q=month')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
