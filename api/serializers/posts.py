@@ -39,6 +39,7 @@ class PostModelSerializer(serializers.HyperlinkedModelSerializer):
     url_like = serializers.SerializerMethodField()
     is_like = serializers.SerializerMethodField()
     tags = TagPostSerializer(many=True, read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
 
     def get_is_like(self, obj):
         request = self.context.get('request')
@@ -55,5 +56,7 @@ class PostModelSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
         fields = (
-            'id', 'url', 'title', 'description', 'finished', 'author', 'likes', 'url_like', 'is_like', 'tags'
+            'id', 'url', 'title', 'description',
+            'finished', 'author', 'likes', 'url_like',
+            'is_like', 'tags','created_at'
         )
