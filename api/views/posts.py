@@ -116,7 +116,7 @@ class PostLikeView(APIView):
         if request.user in self.post.likes.all():
             like = PostLike.objects.get(post=self.post, user=request.user)
             like.delete()
-            like.save()
+
         else:
             like = PostLike.objects.create(post=self.post, user=request.user)
             like.save()
