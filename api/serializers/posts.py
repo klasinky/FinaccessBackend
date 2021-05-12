@@ -32,7 +32,7 @@ class PostModelSerializer(serializers.HyperlinkedModelSerializer):
     """Post Model Serializer"""
     url = serializers.HyperlinkedIdentityField(view_name="posts-viewset", read_only=True, lookup_field="id")
     title = serializers.CharField(max_length=255)
-    description = serializers.CharField(max_length=5000)
+    description = serializers.CharField(max_length=500000)
     finished = serializers.BooleanField(default=False, required=False)
     author = UserModelSerializer(read_only=True)
     likes = serializers.SerializerMethodField(read_only=True)
