@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from django.urls import reverse
 
-from core.models import Post
+from core.models import Post, Tag
 
 
 def create_user(**params):
@@ -70,6 +70,41 @@ class PostPrivateAPITest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         post_count = Post.objects.filter(author=self.user).count()
         self.assertEqual(post_count, 1)
+
+    def test_create_post_with_tag(self):
+        """Crear un post"""
+        tag = Tag.objects.create(name='finanzas')
+        payload = {
+            'title': 'Test Title',
+            'description': 'Test Description',
+            'tags': [str(tag.pk),]
+        }
+        res = self.client.post(CREATE_POST_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        post_count = Post.objects.filter(author=self.user).count()
+        self.assertEqual(post_count, 1)
+        post = Post.objects.last()
+        self.assertEqual(tag in post.tags.all(), True)
+
+    def test_create_post_with_multiple_tags(self):
+        """Crear un post"""
+        tag = Tag.objects.create(name='finanzas')
+        tag2 = Tag.objects.create(name='help')
+        tag3 = Tag.objects.create(name='bug')
+        payload = {
+            'title': 'Test Title',
+            'description': 'Test Description',
+            'tags': [str(tag.pk),str(tag2.pk),str(tag3.pk), ]
+        }
+
+        res = self.client.post(CREATE_POST_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        post_count = Post.objects.filter(author=self.user).count()
+        self.assertEqual(post_count, 1)
+        post = Post.objects.last()
+        self.assertEqual(tag in post.tags.all(), True)
+        self.assertEqual(tag2 in post.tags.all(), True)
+        self.assertEqual(tag3 in post.tags.all(), True)
 
     def test_create_post_fail_cache(self):
         """Comprobar que no te deje crear 2 post consecutivos"""

@@ -132,6 +132,12 @@ class Expense(AmountBase):
         return self.name
 
 
+class Tag(ModelBase):
+    """Tags para los post"""
+    name = models.CharField('Tag', max_length=255)
+    color = models.CharField('Color', max_length=255)
+
+
 class Post(ModelBase):
     """Post, modelo para el post"""
     title = models.CharField('Title', max_length=255)
@@ -139,6 +145,7 @@ class Post(ModelBase):
     finished = models.BooleanField(default=False)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post_author')
     likes = models.ManyToManyField(User, through='PostLike',)
+    tags = models.ManyToManyField(Tag, related_name='tags')
 
     def total_likes(self):
         return self.likes.count()

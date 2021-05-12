@@ -34,7 +34,7 @@ class CommentCreateView(mixins.CreateModelMixin,
     def create(self, request, *args, **kwargs):
         cache_key = f'comment_created-{request.user.pk}'
         if cache.has_key(cache_key):
-            return Response({'detail': 'Tienes que esperar 1 minuto para crear otro comentarios'},
+            return Response({'detail': 'Tienes que esperar 1 minuto para crear otro comentario'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         response = super(CommentCreateView, self).create(request, *args, **kwargs)

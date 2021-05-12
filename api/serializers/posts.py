@@ -1,9 +1,23 @@
 from django.urls import reverse
 from rest_framework import serializers
-from rest_framework.fields import SerializerMethodField
 
-from core.models import Post
+from core.models import Post, Tag
 from user.serializers import UserModelSerializer
+
+
+class PostCreateSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(max_length=255)
+    description = serializers.CharField(max_length=5000)
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True, allow_null=True, queryset=Tag.objects.all()
+    )
+
+    class Meta:
+        model = Post
+        fields = (
+            'title', 'description','tags'
+        )
+
 
 
 class PostModelSerializer(serializers.HyperlinkedModelSerializer):
@@ -32,5 +46,5 @@ class PostModelSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
         fields = (
-            'id' ,'url', 'title', 'description', 'finished', 'author', 'likes', 'url_like','is_like'
+            'id', 'url', 'title', 'description', 'finished', 'author', 'likes', 'url_like', 'is_like'
         )

@@ -8,8 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.permissions import IsAccountOwner, IsPostOwner
-from api.serializers.posts import PostModelSerializer
+from api.permissions import IsPostOwner
+from api.serializers.posts import PostModelSerializer, PostCreateSerializer
 from core.models import Post, PostLike
 from django.core.cache import cache
 
@@ -55,7 +55,7 @@ class PostViewSet(mixins.ListModelMixin,
 
             post_list = Post.objects.annotate(num_likes=Count(
                 'likes', filter=query
-            )).filter(is_active=True).order_by('num_likes')
+            )).filter(is_active=True).order_by('-num_likes')
             return post_list
 
         return Post.objects.filter(is_active=True)
@@ -65,10 +65,14 @@ class PostViewSet(mixins.ListModelMixin,
         if cache.has_key(cache_key):
             return Response({'detail': 'Tienes que esperar 5 minutos para crear otro post'},
                             status=status.HTTP_400_BAD_REQUEST)
-        response = super(PostViewSet, self).create(request, *args, **kwargs)
-        if response.status_code == 201:
-            cache.set(cache_key, True, timeout=300)
-        return response
+
+        serializer = PostCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        cache.set(cache_key, True, timeout=300)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
         """Añadir el author del post al momento de crearlo"""
@@ -106,7 +110,7 @@ class PostLikeView(APIView):
         }
         cache_key = f'post_liked{self.post.pk}-{request.user.pk}'
         if cache.has_key(cache_key):
-            return Response({'detail': 'Tienes que esperar 10 s'},
+            return Response({'detail': 'Tienes que esperar 10 segundos para repetir esta acción'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         if request.user in self.post.likes.all():

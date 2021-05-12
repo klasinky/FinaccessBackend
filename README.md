@@ -182,3 +182,6 @@ python manage.py test
     - Filtros del Overview
     - Análisis del mes
 ---
+### :white_check_mark: Miércoles 12 de Mayo (30 minutos) :white_check_mark:
+    - Tags para el post
+---
