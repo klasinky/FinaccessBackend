@@ -40,10 +40,16 @@ class PostModelSerializer(serializers.HyperlinkedModelSerializer):
     is_like = serializers.SerializerMethodField()
     tags = TagPostSerializer(many=True, read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
+    update_at = serializers.DateTimeField(read_only=True)
+    is_owner = serializers.SerializerMethodField()
 
     def get_is_like(self, obj):
         request = self.context.get('request')
         return request.user in obj.likes.all()
+
+    def get_is_owner(self, obj):
+        request = self.context.get('request')
+        return request.user == obj.author
 
     def get_url_like(self, obj):
         request = self.context.get('request')
@@ -58,5 +64,6 @@ class PostModelSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'url', 'title', 'description',
             'finished', 'author', 'likes', 'url_like',
-            'is_like', 'tags','created_at'
+            'is_like', 'tags','created_at','update_at',
+            'is_owner'
         )

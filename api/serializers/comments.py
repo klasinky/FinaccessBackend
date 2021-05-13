@@ -27,10 +27,15 @@ class CommentDetailSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     url_like = serializers.SerializerMethodField()
     is_like = serializers.SerializerMethodField()
+    is_owner = serializers.SerializerMethodField()
 
     def get_is_like(self, obj):
         request = self.context.get('request')
         return request.user in obj.likes.all()
+
+    def get_is_owner(self, obj):
+        request = self.context.get('request')
+        return request.user == obj.author
 
     def get_url_like(self, obj):
         request = self.context.get('request')
@@ -48,4 +53,4 @@ class CommentDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('description', 'author', 'parent', 'likes', 'url_like','created_at','is_like')
+        fields = ('description', 'author', 'parent', 'likes', 'url_like','created_at','is_like','is_owner')
