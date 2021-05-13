@@ -1,17 +1,9 @@
 from django.urls import reverse
 from rest_framework import serializers
 
+from api.serializers.tags import TagPostSerializer
 from core.models import Post, Tag
 from user.serializers import UserModelSerializer
-
-
-class TagPostSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(read_only=True, max_length=255)
-    color = serializers.CharField(read_only=True, max_length=255)
-
-    class Meta:
-        model = Tag
-        fields = ('name', 'color', 'id')
 
 
 class PostCreateSerializer(serializers.ModelSerializer):

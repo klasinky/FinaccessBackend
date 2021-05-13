@@ -9,7 +9,7 @@ from api.views.months import MonthViewSet, MonthOverView
 from api.views.posts import PostViewSet, PostLikeView
 
 # Month
-from api.views.tags import TagAPIView
+from api.views.tags import TagAPIView, TagDetailView
 
 month_create = MonthViewSet.as_view({
     'post': 'create'
@@ -126,6 +126,7 @@ urlpatterns = [
 
     # Tags
     path('tags', TagAPIView.as_view(), name="tags"),
+    path('tags/detail', TagDetailView.as_view(), name="tags-detail"),
 
     # Comment
     path('posts/<int:idpost>/comment', CommentCreateView.as_view({'post': 'create'}), name="comments-create"),
