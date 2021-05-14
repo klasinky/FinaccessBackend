@@ -82,6 +82,20 @@ class PostViewSet(mixins.ListModelMixin,
         instance.soft_delete()
         instance.save()
 
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = PostCreateSerializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
     @action(detail=False, methods=['PATCH'])
     def change_finished_post(self, request, *args, **kwargs):
         """Cambia la variable finished"""
