@@ -3,11 +3,12 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.core.cache import cache
 
-from core.models import User
+from core.models import User, UserFollowing
 from user.permissions import IsAccountOwner
-from user.serializers import UserModelSerializer, UserSignUpSerializer,\
-    UserLoginSerializer, UserChangePasswordSerializer
+from user.serializers import UserModelSerializer, UserSignUpSerializer, \
+    UserLoginSerializer, UserChangePasswordSerializer, UserProfileSerializer
 
 
 class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
@@ -92,6 +93,35 @@ class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
         return Response({'message': 'Contraseña actualizada correctamente'},
                         status=status.HTTP_200_OK)
+
+
+class UserProfileViewSet(mixins.RetrieveModelMixin,
+                         viewsets.GenericViewSet):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserProfileSerializer
+    lookup_field = 'username'
+    queryset = User.objects.all()
+
+    @action(detail=False, methods=['PATCH'])
+    def follow(self, request, *args, **kwargs):
+        serializer_context = {
+            'request': request,
+        }
+        cache_key = f'user_follow{self.get_object().id}-{request.user.pk}'
+        if cache.has_key(cache_key):
+            return Response({'detail': 'Tienes que esperar 10 segundos para repetir esta acción'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if UserFollowing.objects.filter(user=request.user, following=self.get_object())\
+                .count() > 0:
+            follow = UserFollowing.objects.get(user=request.user, following=self.get_object())
+            follow.delete()
+        else:
+            follow = UserFollowing.objects.create(user=request.user, following=self.get_object())
+            follow.save()
+        cache.set(cache_key, True, timeout=10)
+        data = self.get_serializer(self.get_object(), context=serializer_context).data
+        return Response(data, status.HTTP_200_OK)
 
 
 class UserCheckAuthenticated(APIView):

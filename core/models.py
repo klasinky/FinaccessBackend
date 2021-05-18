@@ -19,6 +19,7 @@ class ModelBase(models.Model):
         abstract = True
         ordering = ("-created_at",)
 
+
 class Currency(ModelBase):
     """Currency, modelo para divisas"""
     name = models.CharField('Name', max_length=255, unique=True)
@@ -91,10 +92,21 @@ class User(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'name']
+
+
+class UserFollowing(ModelBase):
+    user = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+    following = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'following'], name='unique_followers')
+        ]
 
 
 class Category(ModelBase):

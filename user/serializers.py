@@ -5,13 +5,14 @@ from django.db.models import fields
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework.authtoken.models import Token
-from core.models import Currency, User
+from core.models import Currency, User, Post, UserFollowing
 
 
 class CurrencyModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency
         fields = '__all__'
+
 
 class UserModelSerializer(serializers.ModelSerializer):
     """User model serializer"""
@@ -110,3 +111,54 @@ class UserChangePasswordSerializer(serializers.Serializer):
             "new_password": {"write_only": True},
             "old_password": {"write_only": True},
         }
+
+
+class UserProfileSerializer(serializers.Serializer):
+    username = serializers.CharField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    total_likes = serializers.SerializerMethodField()
+    total_followers = serializers.SerializerMethodField()
+    total_following = serializers.SerializerMethodField()
+    is_your_profile = serializers.SerializerMethodField()
+    is_follower = serializers.SerializerMethodField()
+    is_following = serializers.SerializerMethodField()
+
+    def get_is_your_profile(self, obj):
+        request = self.context.get('request')
+        return request.user == obj
+
+    def get_is_following(self, obj):
+        """Indica si tú sigues al usuario"""
+        request = self.context.get('request')
+        if request.user == obj:
+            return False
+        return UserFollowing.objects.filter\
+            (user=request.user, following=obj).count() > 0
+
+    def get_is_follower(self, obj):
+        """Indica si el usuario te sigue"""
+        request = self.context.get('request')
+        if request.user == obj:
+            return False
+        return UserFollowing.objects.filter\
+            (user=obj, following=request.user).count() > 0
+
+    def get_total_likes(self, obj):
+        total_likes: int = 0
+        posts = Post.objects.filter(author=obj)
+        for post in posts:
+            total_likes += post.total_likes()
+        return total_likes
+
+    def get_total_followers(self, obj):
+        return UserFollowing.objects.filter(following=obj).count()
+
+    def get_total_following(self, obj):
+        return UserFollowing.objects.filter(user=obj).count()
+
+    class Meta:
+        model = User
+        fields = ('id', 'username','is_your_profile',
+                  'total_likes', 'is_follower',
+                  'total_followers', 'is_following'
+                  'total_following', 'name')

@@ -4,6 +4,8 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
+from core.models import UserFollowing
+
 
 def create_user(**params):
     return get_user_model().objects.create_user(
@@ -13,6 +15,8 @@ def create_user(**params):
         password=params['password']
     )
 
+def get_public_profile_url(username:str):
+    return reverse('users-public-profile', kwargs={'username':username})
 
 CREATE_USER_URL = reverse('users-register')
 LOGIN_USER_URL = reverse('users-login')
@@ -168,3 +172,41 @@ class UserPrivateAPITests(TestCase):
         self.user.refresh_from_db()
         self.assertFalse(self.user.is_active)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_get_public_profile(self):
+        res = self.client.get(get_public_profile_url(self.payload['username']))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_follow_profile(self):
+        payload = {
+            'username': "another",
+            'email': "another@test.com",
+            'name': "Another",
+            'password': "Juma123!",
+            'password_confirmation': "Juma123!"
+        }
+        another_user = create_user(**payload)
+        res = self.client.patch(get_public_profile_url(another_user.username))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['is_following'], True)
+        self.assertEqual(res.data['is_follower'], False)
+        self.assertEqual(res.data['is_your_profile'], False)
+        self.assertEqual(res.data['total_followers'], 1)
+
+    def test_unfollow_profile(self):
+        payload = {
+            'username': "another",
+            'email': "another@test.com",
+            'name': "Another",
+            'password': "Juma123!",
+            'password_confirmation': "Juma123!"
+        }
+        another_user = create_user(**payload)
+        follow = UserFollowing.objects.create(user=self.user, following=another_user)
+        follow.save()
+        res = self.client.patch(get_public_profile_url(another_user.username))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['is_following'], False)
+        self.assertEqual(res.data['is_follower'], False)
+        self.assertEqual(res.data['is_your_profile'], False)
+        self.assertEqual(res.data['total_followers'], 0)
