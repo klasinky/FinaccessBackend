@@ -5,6 +5,8 @@ from django.db.models import fields
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework.authtoken.models import Token
+
+from app import settings
 from core.models import Currency, User, Post, UserFollowing
 from drf_extra_fields.fields import Base64ImageField
 
@@ -129,7 +131,10 @@ class UserProfileSerializer(serializers.Serializer):
     profile_pic = serializers.SerializerMethodField('get_profile_url')
 
     def get_profile_url(self, obj):
-        return obj.profile_pic.url
+        request = self.context.get('request')
+        params = f'{settings.STATIC_URL}images{obj.profile_pic.url}'
+        url = request.build_absolute_uri(params)
+        return url
 
     def get_total_posts(self, obj) -> int:
         return Post.objects.filter(author=obj, is_active=True).count()
