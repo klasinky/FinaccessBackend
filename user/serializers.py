@@ -132,8 +132,10 @@ class UserProfileSerializer(serializers.Serializer):
 
     def get_profile_url(self, obj):
         request = self.context.get('request')
-        params = f'{settings.STATIC_URL}images{obj.profile_pic.url}'
-        url = request.build_absolute_uri(params)
+        url = None
+        if obj.profile_pic:
+            params = f'{settings.STATIC_URL}images{obj.profile_pic.url}'
+            url = request.build_absolute_uri(params)
         return url
 
     def get_total_posts(self, obj) -> int:

@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import serializers
 from core.models import Comment
-from user.serializers import UserModelSerializer
+from user.serializers import UserProfileSerializer
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):
@@ -22,7 +22,7 @@ class CommentDetailSerializer(serializers.ModelSerializer):
                                         max_length=500,
                                         read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
-    author = UserModelSerializer()
+    author = UserProfileSerializer()
     parent = serializers.SerializerMethodField(read_only=True)
     likes = serializers.SerializerMethodField(read_only=True)
     url_like = serializers.SerializerMethodField()
