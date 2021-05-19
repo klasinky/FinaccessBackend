@@ -125,7 +125,7 @@ class UserProfileSerializer(serializers.Serializer):
     is_following = serializers.SerializerMethodField()
 
     def get_total_posts(self, obj) -> int:
-        return Post.objects.filter(author=obj).count()
+        return Post.objects.filter(author=obj, is_active=True).count()
 
     def get_is_your_profile(self, obj) -> bool:
         request = self.context.get('request')
