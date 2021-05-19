@@ -165,4 +165,4 @@ class UserProfileSerializer(serializers.Serializer):
         fields = ('id', 'username','is_your_profile',
                   'total_likes', 'is_follower',
                   'total_followers', 'is_following'
-                  'total_following', 'name')
+                  'total_following', 'name','total_posts')
