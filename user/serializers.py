@@ -126,7 +126,10 @@ class UserProfileSerializer(serializers.Serializer):
     is_your_profile = serializers.SerializerMethodField()
     is_follower = serializers.SerializerMethodField()
     is_following = serializers.SerializerMethodField()
-    profile_pic = serializers.ImageField(required=False)
+    profile_pic = serializers.SerializerMethodField('get_profile_url')
+
+    def get_image_url(self, obj):
+        return obj.profile_pic.url
 
     def get_total_posts(self, obj) -> int:
         return Post.objects.filter(author=obj, is_active=True).count()
