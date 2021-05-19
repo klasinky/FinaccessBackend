@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from mptt.models import MPTTModel, TreeForeignKey
 
 
@@ -80,7 +80,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     """User, modelo para usuario"""
     username = models.CharField('Username', max_length=255, unique=True)
     email = models.EmailField('Email', max_length=255, unique=True)

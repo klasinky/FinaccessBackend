@@ -6,6 +6,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework.authtoken.models import Token
 from core.models import Currency, User, Post, UserFollowing
+from drf_extra_fields.fields import Base64ImageField
 
 
 class CurrencyModelSerializer(serializers.ModelSerializer):
@@ -17,6 +18,7 @@ class CurrencyModelSerializer(serializers.ModelSerializer):
 class UserModelSerializer(serializers.ModelSerializer):
     """User model serializer"""
     currency = CurrencyModelSerializer(read_only=True)
+    profile_pic = Base64ImageField(required=False)
 
     class Meta:
         model = User
@@ -26,7 +28,8 @@ class UserModelSerializer(serializers.ModelSerializer):
             'email',
             'last_login',
             'is_active',
-            'currency'
+            'currency',
+            'profile_pic'
         )
         read_only_fields = (
             'last_login', 'is_active'
@@ -123,6 +126,7 @@ class UserProfileSerializer(serializers.Serializer):
     is_your_profile = serializers.SerializerMethodField()
     is_follower = serializers.SerializerMethodField()
     is_following = serializers.SerializerMethodField()
+    profile_pic = serializers.ImageField(required=False)
 
     def get_total_posts(self, obj) -> int:
         return Post.objects.filter(author=obj, is_active=True).count()
@@ -163,6 +167,6 @@ class UserProfileSerializer(serializers.Serializer):
     class Meta:
         model = User
         fields = ('id', 'username','is_your_profile',
-                  'total_likes', 'is_follower',
+                  'total_likes', 'is_follower','profile_pic'
                   'total_followers', 'is_following'
                   'total_following', 'name','total_posts')
