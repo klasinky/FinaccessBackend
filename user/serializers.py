@@ -119,15 +119,19 @@ class UserProfileSerializer(serializers.Serializer):
     total_likes = serializers.SerializerMethodField()
     total_followers = serializers.SerializerMethodField()
     total_following = serializers.SerializerMethodField()
+    total_posts = serializers.SerializerMethodField()
     is_your_profile = serializers.SerializerMethodField()
     is_follower = serializers.SerializerMethodField()
     is_following = serializers.SerializerMethodField()
 
-    def get_is_your_profile(self, obj):
+    def get_total_posts(self, obj) -> int:
+        return Post.objects.filter(author=obj).count()
+
+    def get_is_your_profile(self, obj) -> bool:
         request = self.context.get('request')
         return request.user == obj
 
-    def get_is_following(self, obj):
+    def get_is_following(self, obj) -> bool:
         """Indica si tú sigues al usuario"""
         request = self.context.get('request')
         if request.user == obj:
