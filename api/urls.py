@@ -6,7 +6,7 @@ from api.views.currency import CurrencyAPIView
 from api.views.entries import EntryCreateView, EntryViewSet, EntryUploadXLS, EntryDownloadXLS
 from api.views.expenses import ExpenseCreateView, ExpenseViewSet, ExpenseUploadXLS, ExpenseDownloadXLS
 from api.views.months import MonthViewSet, MonthOverView
-from api.views.posts import PostViewSet, PostLikeView
+from api.views.posts import PostViewSet, PostLikeView, PostRecommendationView
 
 # Month
 from api.views.tags import TagAPIView, TagDetailView
@@ -123,7 +123,7 @@ urlpatterns = [
     path('posts/<int:id>', post_viewset, name="posts-viewset"),
     path('posts/<int:id>/finished', post_change_finished, name="posts-change-finished"),
     path('posts/<int:id>/like', PostLikeView.as_view(), name="posts-like"),
-
+    path('posts/<int:id>/recommendation', PostRecommendationView.as_view(), name='posts-recommendation'),
     # Tags
     path('tags', TagAPIView.as_view(), name="tags"),
     path('tags/detail', TagDetailView.as_view(), name="tags-detail"),

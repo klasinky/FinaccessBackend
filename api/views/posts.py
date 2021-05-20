@@ -7,7 +7,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+import random
 from api.permissions import IsPostOwner
 from api.serializers.posts import PostModelSerializer, PostCreateSerializer
 from core.models import Post, PostLike
@@ -137,4 +137,36 @@ class PostLikeView(APIView):
         self.post.save()
         cache.set(cache_key, True, timeout=10)
         data = PostModelSerializer(self.post, context=serializer_context).data
+        return Response(data, status.HTTP_200_OK)
+
+
+class PostRecommendationView(APIView):
+    permissions_class = [IsAuthenticated, ]
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.post = None
+
+    def dispatch(self, request, *args, **kwargs):
+        id_post = kwargs.pop('id')
+        self.post = get_object_or_404(Post, id=id_post)
+        return super(PostRecommendationView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        serializer_context = {
+            'request': request,
+        }
+        # Si el post contiene TAGS, se buscan los similares
+        if self.post.tags.all().count() > 0:
+            post_list = Post.objects\
+                .filter(tags__in=self.post.tags.all(), is_active=True)\
+                .exclude(pk=self.post.pk).distinct()[:3]
+        # Si no contiene tags, buscan 3 randoms
+        else:
+            valid_id_list = Post.objects.filter(is_active=True).values_list('id', flat=True)
+            random_id_list = random.sample(list(valid_id_list), min(len(valid_id_list), 3))
+            post_list = Post.objects.filter(id__in=random_id_list)
+
+        data = PostModelSerializer(post_list, context=serializer_context, many=True).data
+
         return Response(data, status.HTTP_200_OK)
