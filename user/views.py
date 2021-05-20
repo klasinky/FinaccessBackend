@@ -1,5 +1,6 @@
+from django.db.models import Count
 from rest_framework import viewsets, mixins, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -130,3 +131,17 @@ class UserCheckAuthenticated(APIView):
 
     def get(self, request):
         return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def users_tops(request):
+    serializer_context = {
+        'request': request,
+    }
+    user = request.user
+    users = User.objects.annotate(likes_count=Count('post__likes'))\
+                .order_by('likes_count').reverse().exclude(id=user.id)[0:3]
+
+    serializer = UserProfileSerializer(users, context=serializer_context, many=True)
+    return Response(serializer.data)

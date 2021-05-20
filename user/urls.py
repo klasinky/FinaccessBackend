@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserViewSet, UserCheckAuthenticated, UserProfileViewSet
+from .views import UserViewSet, UserCheckAuthenticated, UserProfileViewSet, users_tops
 
 user_login = UserViewSet.as_view({
     'post': 'login'
@@ -35,5 +35,6 @@ urlpatterns = [
     path('me/delete', user_delete, name='users-soft'),
     path('profile/<str:username>', user_public_profile, name="users-public-profile"),
     path('me/changepassword', user_change_password, name='users-changepassword'),
-    path('check', UserCheckAuthenticated.as_view(), name="user-check-authenticated")
+    path('check', UserCheckAuthenticated.as_view(), name="user-check-authenticated"),
+    path('tops', users_tops, name="user-top")
 ]
