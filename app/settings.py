@@ -188,3 +188,7 @@ APPEND_SLASH = True
 # Stock API
 
 STOCK_API_KEY = env('STOCK_API_KEY')
+
+# Websocket
+
+WS_URL = 'https://ws-finaccess.herokuapp.com'

@@ -1,8 +1,12 @@
+import json
+
 from django.db.models.signals import post_save
 import requests
 
 from api.serializers.notifications import NotificationModelSerializer
+from app import settings
 from core.models import Post, Notification, Comment, UserFollowing
+from rest_framework.authtoken.models import Token
 
 
 def post_created(sender, instance, created, **kwargs):
@@ -49,8 +53,7 @@ post_save.connect(following_created, sender=UserFollowing)
 
 
 def send_ws_info(serializer, id):
-    print("Enviando info")
-    url = f'http://localhost:9000/notify/{id}'
-    headers = {'Authorization': 'Token a19747c5465dbb828671dbc2c72f1f98c2e7ece9'}
-    requests.post(url=url, data=serializer, headers=headers)
-    print("Info enviada")
+    url = f'{settings.WS_URL}/notify/{id}'
+    token, created = Token.objects.get_or_create(user__id=id)
+    headers = {'Authorization': f'Token {token.key}'}
+    requests.post(url=url, json=serializer, headers=headers)
