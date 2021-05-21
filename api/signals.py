@@ -1,5 +1,7 @@
 from django.db.models.signals import post_save
+import requests
 
+from api.serializers.notifications import NotificationModelSerializer
 from core.models import Post, Notification, Comment, UserFollowing
 
 
@@ -7,14 +9,15 @@ def post_created(sender, instance, created, **kwargs):
     if not created: return
     followers = instance.author.followers.all()
     for follower in followers:
-        Notification.objects.create(
+        notification = Notification.objects.create(
             to_user=follower.user,
             id_type=instance.pk,
             from_user=instance.author,
             notification_type='post',
             content='ha creado un post.'
         )
-
+        serializer = NotificationModelSerializer(notification).data
+        send_ws_info(serializer, follower.user.pk)
 
 def comment_created(sender, instance, created, **kwargs):
     if not created or instance.author == \
@@ -43,3 +46,11 @@ def following_created(sender, instance, created, **kwargs):
 post_save.connect(post_created, sender=Post)
 post_save.connect(comment_created, sender=Comment)
 post_save.connect(following_created, sender=UserFollowing)
+
+
+def send_ws_info(serializer, id):
+    print("Enviando info")
+    url = f'http://localhost:9000/notify/{id}'
+    headers = {'Authorization': 'Token a19747c5465dbb828671dbc2c72f1f98c2e7ece9'}
+    requests.post(url=url, data=serializer, headers=headers)
+    print("Info enviada")
