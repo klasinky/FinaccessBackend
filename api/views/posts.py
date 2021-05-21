@@ -8,9 +8,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import random
+
 from api.permissions import IsPostOwner
 from api.serializers.posts import PostModelSerializer, PostCreateSerializer
-from core.models import Post, PostLike
+from core.models import Post, PostLike, User
 from django.core.cache import cache
 
 
@@ -45,7 +46,15 @@ class PostViewSet(mixins.ListModelMixin,
         top = post con mas likes
         """
         sorting = self.request.query_params.get('sort')
+        filter_by_followers = self.request.query_params.get('followers')
         query = Q()
+        filter_query = Q()
+
+        if filter_by_followers is not None:
+
+            followers_list = self.request.user.following.all().values_list('following__id', flat=True)
+            filter_query = Q(author__id__in=followers_list)
+
         if sorting is not None:
             if sorting == 'hot':
                 week_end = datetime.datetime.now()
@@ -55,10 +64,11 @@ class PostViewSet(mixins.ListModelMixin,
 
             post_list = Post.objects.annotate(num_likes=Count(
                 'likes', filter=query
-            )).filter(is_active=True).order_by('-num_likes')
+            )).filter(filter_query, is_active=True,).order_by('-num_likes')
+
             return post_list
 
-        return Post.objects.filter(is_active=True)
+        return Post.objects.filter(filter_query, is_active=True)
 
     def create(self, request, *args, **kwargs):
         cache_key = f'post_created-{request.user.pk}'
@@ -170,3 +180,24 @@ class PostRecommendationView(APIView):
         data = PostModelSerializer(post_list, context=serializer_context, many=True).data
 
         return Response(data, status.HTTP_200_OK)
+
+
+class PostByUser(APIView):
+    permissions_class = [IsAuthenticated, ]
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.user = None
+
+    def dispatch(self, request, *args, **kwargs):
+        username = kwargs.pop('username')
+        self.user = get_object_or_404(User, id=username)
+        return super(PostByUser, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        serializer_context = {
+            'request': request,
+        }
+        posts = Post.objects.filter(author=self.user, is_active=True)
+        data = PostModelSerializer(posts, context=serializer_context, many=True).data
+        return Response(data, status=status.HTTP_200_OK)

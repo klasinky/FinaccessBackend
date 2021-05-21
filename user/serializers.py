@@ -18,9 +18,40 @@ class CurrencyModelSerializer(serializers.ModelSerializer):
 
 
 class UserModelSerializer(serializers.ModelSerializer):
-    """User model serializer"""
+    """User model serializer
+        Se utiliza para crear / editar usuario
+    """
     currency = CurrencyModelSerializer(read_only=True)
     profile_pic = Base64ImageField(required=False)
+
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'name',
+            'email',
+            'last_login',
+            'is_active',
+            'currency',
+            'profile_pic'
+        )
+        read_only_fields = (
+            'last_login', 'is_active'
+        )
+
+
+class UserPrivateSerializer(serializers.ModelSerializer):
+    """User private serializer"""
+    currency = CurrencyModelSerializer(read_only=True)
+    profile_pic = serializers.SerializerMethodField('get_profile_url')
+
+    def get_profile_url(self, obj):
+        request = self.context.get('request')
+        url = None
+        if obj.profile_pic:
+            params = f'{settings.STATIC_URL}images{obj.profile_pic.url}'
+            url = request.build_absolute_uri(params)
+        return url
 
     class Meta:
         model = User

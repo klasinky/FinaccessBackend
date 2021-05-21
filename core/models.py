@@ -195,3 +195,18 @@ class UserCompany(ModelBase):
     """UserCompany, modelo para vincular un usuario con una accion de bolsa"""
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     companystock = models.ForeignKey(CompanyStock, on_delete=models.CASCADE)
+
+
+class Notification(ModelBase):
+    CHOICES = (
+        ('post', 'post'),
+        ('comment', 'comment'),
+        ('follow', 'follow'),
+    )
+
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    content = models.CharField(max_length=255)
+    is_read = models.BooleanField(default=False)
+    id_type = models.BigIntegerField()
+    notification_type = models.CharField(max_length=20, choices=CHOICES)

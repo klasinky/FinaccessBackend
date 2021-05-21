@@ -1,4 +1,4 @@
-from django.db.models import Count
+from django.db.models import Count, Q
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -9,7 +9,7 @@ from django.core.cache import cache
 from core.models import User, UserFollowing
 from user.permissions import IsAccountOwner
 from user.serializers import UserModelSerializer, UserSignUpSerializer, \
-    UserLoginSerializer, UserChangePasswordSerializer, UserProfileSerializer
+    UserLoginSerializer, UserChangePasswordSerializer, UserProfileSerializer, UserPrivateSerializer
 
 
 class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
@@ -60,7 +60,7 @@ class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     def profile(self, request, *args, **kwargs):
         """Obtiene el perfil del usuario, necesita estar autenticado"""
         user = self.get_object()
-        data = UserModelSerializer(user).data
+        data = UserPrivateSerializer(user).data
         return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['PATCH'])
@@ -105,6 +105,7 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,
 
     @action(detail=False, methods=['PATCH'])
     def follow(self, request, *args, **kwargs):
+        """Sigue o deja de seguir a un usuario"""
         serializer_context = {
             'request': request,
         }
@@ -136,12 +137,12 @@ class UserCheckAuthenticated(APIView):
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def users_tops(request):
+    """Regresa los 5 usuarios com mas likes en los posts"""
     serializer_context = {
         'request': request,
     }
-    user = request.user
-    users = User.objects.annotate(likes_count=Count('post__likes'))\
-                .order_by('likes_count').reverse().exclude(id=user.id)[0:3]
+    users = User.objects.annotate(likes_count=Count('post__likes', Q(post__is_active=True)))\
+                .order_by('likes_count').reverse()[0:5]
 
     serializer = UserProfileSerializer(users, context=serializer_context, many=True)
     return Response(serializer.data)
