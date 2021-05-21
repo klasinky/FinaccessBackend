@@ -191,7 +191,7 @@ class PostByUser(APIView):
 
     def dispatch(self, request, *args, **kwargs):
         username = kwargs.pop('username')
-        self.user = get_object_or_404(User, id=username)
+        self.user = get_object_or_404(User, username=username)
         return super(PostByUser, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
