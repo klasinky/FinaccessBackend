@@ -12,6 +12,7 @@ __pycache__/
 .vscode
 # Distribution / packaging
 .Python
+*.sock
 build/
 develop-eggs/
 dist/
