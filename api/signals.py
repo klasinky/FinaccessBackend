@@ -1,5 +1,3 @@
-import json
-
 from django.db.models.signals import post_save
 import requests
 
@@ -23,28 +21,33 @@ def post_created(sender, instance, created, **kwargs):
         serializer = NotificationModelSerializer(notification).data
         send_ws_info(serializer, follower.user.id)
 
+
 def comment_created(sender, instance, created, **kwargs):
     if not created or instance.author == \
             instance.post.author:
         return
-    Notification.objects.create(
+    notification = Notification.objects.create(
         to_user=instance.post.author,
         id_type=instance.post.pk,
         from_user=instance.author,
         notification_type='comment',
         content='ha realizado un comentario en tu post.'
     )
+    serializer = NotificationModelSerializer(notification).data
+    send_ws_info(serializer, instance.post.author.id)
 
 
 def following_created(sender, instance, created, **kwargs):
     if not created: return
-    Notification.objects.create(
+    notification = Notification.objects.create(
         to_user=instance.following,
         id_type=instance.user.pk,
         from_user=instance.user,
         notification_type='follow',
         content='ha comenzado a seguirte.'
     )
+    serializer = NotificationModelSerializer(notification).data
+    send_ws_info(serializer, instance.following.id)
 
 
 post_save.connect(post_created, sender=Post)
