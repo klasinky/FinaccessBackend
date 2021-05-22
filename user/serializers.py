@@ -194,7 +194,7 @@ class UserProfileSerializer(serializers.Serializer):
 
     def get_total_likes(self, obj):
         total_likes: int = 0
-        posts = Post.objects.filter(author=obj)
+        posts = Post.objects.filter(author=obj, is_active=True)
         for post in posts:
             total_likes += post.total_likes()
         return total_likes

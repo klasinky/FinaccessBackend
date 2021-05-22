@@ -59,8 +59,11 @@ class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     @action(detail=True, methods=['GET'])
     def profile(self, request, *args, **kwargs):
         """Obtiene el perfil del usuario, necesita estar autenticado"""
+        serializer_context = {
+            'request': request,
+        }
         user = self.get_object()
-        data = UserPrivateSerializer(user).data
+        data = UserPrivateSerializer(user, context=serializer_context).data
         return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['PATCH'])
@@ -141,7 +144,7 @@ def users_tops(request):
     serializer_context = {
         'request': request,
     }
-    users = User.objects.annotate(likes_count=Count('post__likes', Q(post__is_active=True)))\
+    users = User.objects.annotate(likes_count=Count('postlike', Q(post__is_active=True)))\
                 .order_by('likes_count').reverse()[0:5]
 
     serializer = UserProfileSerializer(users, context=serializer_context, many=True)

@@ -21,7 +21,7 @@ def post_created(sender, instance, created, **kwargs):
             content='ha creado un post.'
         )
         serializer = NotificationModelSerializer(notification).data
-        send_ws_info(serializer, follower.user.pk)
+        send_ws_info(serializer, follower.user.id)
 
 def comment_created(sender, instance, created, **kwargs):
     if not created or instance.author == \
