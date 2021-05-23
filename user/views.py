@@ -47,11 +47,14 @@ class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     @action(detail=False, methods=['POST'])
     def login(self, request):
         """Iniciar sesión"""
+        serializer_context = {
+            'request': request,
+        }
         serializer = UserLoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user, token = serializer.save()
         data = {
-            'user': UserPrivateSerializer(user).data,
+            'user': UserPrivateSerializer(user, context=serializer_context).data,
             'access_token': token
         }
         return Response(data, status=status.HTTP_200_OK)
