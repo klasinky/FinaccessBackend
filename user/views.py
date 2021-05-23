@@ -26,7 +26,7 @@ class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         if self.action in ['register', 'login', ]:
             permissions = [AllowAny]
 
-        elif self.action in ['detail', 'update', 'partial_update','profile']:
+        elif self.action in ['detail', 'update', 'partial_update', 'profile']:
             permissions = [IsAuthenticated, IsAccountOwner, ]
 
         else:
@@ -51,7 +51,7 @@ class UserViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         user, token = serializer.save()
         data = {
-            'user': UserModelSerializer(user).data,
+            'user': UserPrivateSerializer(user).data,
             'access_token': token
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -117,7 +117,7 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,
             return Response({'detail': 'Tienes que esperar 10 segundos para repetir esta acción'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if UserFollowing.objects.filter(user=request.user, following=self.get_object())\
+        if UserFollowing.objects.filter(user=request.user, following=self.get_object()) \
                 .count() > 0:
             follow = UserFollowing.objects.get(user=request.user, following=self.get_object())
             follow.delete()
@@ -130,7 +130,6 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,
 
 
 class UserCheckAuthenticated(APIView):
-
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
@@ -144,8 +143,9 @@ def users_tops(request):
     serializer_context = {
         'request': request,
     }
-    users = User.objects.annotate(likes_count=Count('postlike', Q(post__is_active=True)))\
-                .order_by('likes_count').reverse()[0:5]
+    users = User.objects.annotate(
+        likes_count=Count('post_author__likes', filter=Q(post_author__is_active=True))) \
+                .order_by('-likes_count')[0:5]
 
     serializer = UserProfileSerializer(users, context=serializer_context, many=True)
     return Response(serializer.data)
