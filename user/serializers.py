@@ -22,7 +22,7 @@ class UserModelSerializer(serializers.ModelSerializer):
         Se utiliza para crear / editar usuario
     """
     currency = CurrencyModelSerializer(read_only=True)
-    profile_pic = Base64ImageField(required=False)
+    profile_pic = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = User
@@ -75,7 +75,7 @@ class UserSignUpSerializer(serializers.Serializer):
     username = serializers.CharField(
         validators=[UniqueValidator(queryset=User.objects.all())],
         min_length=4,
-        max_length=20,
+        max_length=12,
     )
 
     name = serializers.CharField(min_length=2, max_length=35)
@@ -141,6 +141,11 @@ class UserChangePasswordSerializer(serializers.Serializer):
     """Serializer para cambiar la contraseña"""
     old_password = serializers.CharField(max_length=255, required=True)
     new_password = serializers.CharField(max_length=255, required=True)
+
+    def validate(self, data):
+        new_password = data['new_password']
+        password_validation.validate_password(new_password)
+        return data
 
     class Meta:
         model = User

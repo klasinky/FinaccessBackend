@@ -123,7 +123,7 @@ urlpatterns = [
     path('posts/<int:id>/finished', post_change_finished, name="posts-change-finished"),
     path('posts/<int:id>/like', PostLikeView.as_view(), name="posts-like"),
     path('posts/<int:id>/recommendation', PostRecommendationView.as_view(), name='posts-recommendation'),
-    path('posts/filter/<str:username>', PostByUser.as_view()),
+    path('posts/filter/<str:username>', PostByUser.as_view({'get': 'list'})),
     # Tags
     path('tags', TagAPIView.as_view(), name="tags"),
     path('tags/detail', TagDetailView.as_view(), name="tags-detail"),

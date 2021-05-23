@@ -182,22 +182,18 @@ class PostRecommendationView(APIView):
         return Response(data, status.HTTP_200_OK)
 
 
-class PostByUser(APIView):
+class PostByUser(mixins.ListModelMixin,
+                 viewsets.GenericViewSet):
     permissions_class = [IsAuthenticated, ]
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.user = None
+    serializer_class = PostModelSerializer
+    lookup_field = 'username'
 
-    def dispatch(self, request, *args, **kwargs):
-        username = kwargs.pop('username')
-        self.user = get_object_or_404(User, username=username)
-        return super(PostByUser, self).dispatch(request, *args, **kwargs)
+    def get_object(self):
+        return get_object_or_404(
+            User,
+            username=self.kwargs['username']
+        )
 
-    def get(self, request, *args, **kwargs):
-        serializer_context = {
-            'request': request,
-        }
-        posts = Post.objects.filter(author=self.user, is_active=True)
-        data = PostModelSerializer(posts, context=serializer_context, many=True).data
-        return Response(data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        return Post.objects.filter(author=self.get_object(), is_active=True)

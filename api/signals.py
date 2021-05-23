@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 import requests
-
+import sys
 from api.serializers.notifications import NotificationModelSerializer
 from app import settings
 from core.models import Post, Notification, Comment, UserFollowing
@@ -47,12 +47,14 @@ def following_created(sender, instance, created, **kwargs):
         content='ha comenzado a seguirte.'
     )
     serializer = NotificationModelSerializer(notification).data
+    print("Instance Following, ", instance.following)
     send_ws_info(serializer, instance.following.id)
 
 
-post_save.connect(post_created, sender=Post)
-post_save.connect(comment_created, sender=Comment)
-post_save.connect(following_created, sender=UserFollowing)
+if 'test' not in sys.argv:
+    post_save.connect(post_created, sender=Post)
+    post_save.connect(comment_created, sender=Comment)
+    post_save.connect(following_created, sender=UserFollowing)
 
 
 def send_ws_info(serializer, id):

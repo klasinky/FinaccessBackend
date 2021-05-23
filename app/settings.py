@@ -192,3 +192,5 @@ STOCK_API_KEY = env('STOCK_API_KEY')
 # Websocket
 
 WS_URL = 'https://ws-finaccess.herokuapp.com'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

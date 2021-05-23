@@ -25,12 +25,6 @@ class Currency(ModelBase):
     name = models.CharField('Name', max_length=255, unique=True)
     symbol = models.CharField('Symbol', max_length=255)
 
-    # @classmethod
-    # def get_default_pk(self):
-    #     currency = self.objects.get_or_create(
-    #         name='Euro', symbol='€')
-    #     return currency.pk
-
     class Meta:
         ordering = ('name',)
 

@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
-
 from core.models import UserFollowing
 
 
@@ -73,6 +72,11 @@ class UserPublicAPITest(TestCase):
         res = self.client.get(profile_url)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_create_user_fail_max_12_characters(self):
+        self.payload['username'] = "asdqweasdwqwea"
+        res = self.client.post(CREATE_USER_URL, self.payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class UserPrivateAPITests(TestCase):
     """Probar todos los endpoints que sean privados"""
@@ -140,6 +144,17 @@ class UserPrivateAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertFalse(self.user.check_password(payload['new_password']))
         self.assertIn('Contraseña incorrecta.', res.data['old_password'])
+
+    def test_change_password_fail_not_secure(self):
+        """No permitir cambiar la contraseña si no es segura"""
+        payload = {
+            'old_password': self.payload['password'],
+            'new_password': '1234567890'
+        }
+        res = self.client.patch(CHANGE_PASSWORD_URL, payload)
+        self.user.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(self.user.check_password(payload['new_password']))
 
     def test_change_password_old_password_required(self):
         """Contraseña antigua requerida"""
