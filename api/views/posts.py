@@ -47,8 +47,16 @@ class PostViewSet(mixins.ListModelMixin,
         """
         sorting = self.request.query_params.get('sort')
         filter_by_followers = self.request.query_params.get('followers')
+        tag_filter = self.request.query_params.get('tag')
         query = Q()
         filter_query = Q()
+        tag_query = Q()
+
+        if tag_filter is not None:
+            try:
+                tag_query = Q(tags=int(tag_filter))
+            except Exception as e:
+                print(e)
 
         if filter_by_followers is not None:
 
@@ -64,11 +72,11 @@ class PostViewSet(mixins.ListModelMixin,
 
             post_list = Post.objects.annotate(num_likes=Count(
                 'likes', filter=query
-            )).filter(filter_query, is_active=True,).order_by('-num_likes')
+            )).filter(filter_query, tag_query, is_active=True,).order_by('-num_likes')
 
             return post_list
 
-        return Post.objects.filter(filter_query, is_active=True)
+        return Post.objects.filter(filter_query, tag_query, is_active=True)
 
     def create(self, request, *args, **kwargs):
         cache_key = f'post_created-{request.user.pk}'
