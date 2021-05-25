@@ -194,3 +194,5 @@ STOCK_API_KEY = env('STOCK_API_KEY')
 WS_URL = 'https://ws-finaccess.herokuapp.com'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+ADMINS = [('Manu','manugonzl25@gmail.com')]

@@ -10,8 +10,9 @@ from core.models import Tag
 class TagAPIView(APIView):
 
     def get(self, request):
+        context = {'request':request}
         tags = Tag.objects.all()
-        data = TagPostSerializer(tags, many=True).data
+        data = TagPostSerializer(tags, many=True, context=context).data
 
         return Response(data)
 
