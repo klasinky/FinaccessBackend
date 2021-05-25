@@ -24,6 +24,7 @@ class Currency(ModelBase):
     """Currency, modelo para divisas"""
     name = models.CharField('Name', max_length=255, unique=True)
     symbol = models.CharField('Symbol', max_length=255)
+    label = models.CharField('Label', max_length=255, default="")
 
     class Meta:
         ordering = ('name',)

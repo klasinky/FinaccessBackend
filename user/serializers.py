@@ -21,7 +21,9 @@ class UserModelSerializer(serializers.ModelSerializer):
     """User model serializer
         Se utiliza para crear / editar usuario
     """
-    currency = CurrencyModelSerializer(read_only=True)
+    currency = serializers.PrimaryKeyRelatedField(
+        queryset=Currency.objects.all()
+    )
     profile_pic = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
