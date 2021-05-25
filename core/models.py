@@ -143,6 +143,7 @@ class Tag(ModelBase):
     """Tags para los post"""
     name = models.CharField('Tag', max_length=255)
     color = models.CharField('Color', max_length=255)
+    image = models.ImageField(blank=True, null=True, upload_to='tags')
 
 
 class Post(ModelBase):

@@ -1,3 +1,5 @@
+from lib2to3.fixes.fix_input import context
+
 from django.urls import reverse
 from rest_framework import serializers
 
@@ -30,10 +32,16 @@ class PostModelSerializer(serializers.HyperlinkedModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     url_like = serializers.SerializerMethodField()
     is_like = serializers.SerializerMethodField()
-    tags = TagPostSerializer(many=True, read_only=True)
+    tags = serializers.SerializerMethodField('get_tags_serializer')
     created_at = serializers.DateTimeField(read_only=True)
     update_at = serializers.DateTimeField(read_only=True)
     is_owner = serializers.SerializerMethodField()
+
+    def get_tags_serializer(self, obj):
+        serializer_context = {'request': self.context.get('request') }
+        tags = obj.tags.all()
+        serializer = TagPostSerializer(tags, many=True, context=serializer_context)
+        return serializer.data
 
     def get_is_like(self, obj):
         request = self.context.get('request')
