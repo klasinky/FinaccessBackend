@@ -4,7 +4,7 @@
 
 
 ---
-## Autores:
+## Autores :man_technologist:
 - Manuel Gonzalez Leal (https://github.com/klasinky)
 - Juan Daniel Padilla Obando (https://github.com/zclut)
 ---
@@ -162,6 +162,21 @@ python manage.py test
     - Creación de tests
 ---
 
+### :white_check_mark: Martes 6 de Abril (30 minutos) :white_check_mark:
+    - Cambios en el endpoint month
+---
+
+### :white_check_mark: Miércoles 7 de Abril (2 horas) :white_check_mark:
+    - Cambios en el serializer del month
+---
+
+### :white_check_mark: Jueves 8 de Abril (3 horas) :white_check_mark:
+    - Agregando a las headers del cors el CONTENT-DISPOSITION
+    - Arreglando tests
+    - Arreglando el serializer del usuario
+    - Añadiendo divisas al serializer del usuario
+---
+
 ### :white_check_mark: Miércoles 28 de Abril (1 hora) :white_check_mark:
     - Creación del Endpoint para las Currency
     - Refactor en el Endpoint de Profile
@@ -175,13 +190,77 @@ python manage.py test
     - Nuevo Endpoint = Listar todos los amount del mes
     - Arreglar el cache a los likes, post y comentarios
 ---
+
+### :white_check_mark: Jueves 6 de Mayo (30 minutos) :white_check_mark:
+    - Agregando categoría al serializer de AmountBase
+    - Arreglando validaciones en el campo name del amount
+---
+
 ### :white_check_mark: Sábado 8 de Mayo (1 hora) :white_check_mark:
     - Endpoint para verificar si el usuario está autenticado
 ---
+
 ### :white_check_mark: Domingo 9 de Mayo (2 horas) :white_check_mark:
     - Filtros del Overview
     - Análisis del mes
 ---
+
 ### :white_check_mark: Miércoles 12 de Mayo (30 minutos) :white_check_mark:
     - Tags para el post
+---
+
+### :white_check_mark: Jueves 13 de Mayo (2 horas) :white_check_mark:
+    - Agregando endpoint para conseguir posts por categoria
+    - Agregando id en el serializer de comentario
+    - Agregando campo para saber si es dueño del post o del comentario
+---
+
+### :white_check_mark: Viernes 14 de Mayo (1 hora) :white_check_mark:
+    - Permitir editar tags en el post
+---
+
+### :white_check_mark: Miércoles 19 de Mayo (3 horas) :white_check_mark:
+    - Perfil público total posts
+    - Imagen de perfil del usuario
+    - Serializer para subir imagenes
+    - Comentarios con el serializer publico del usuario
+---
+
+### :white_check_mark: Jueves 20 de Mayo (30 minutos) :white_check_mark:
+    - Top usuarios
+    - Agregando nuevos requirements
+    - Recomendaciones de posts
+---
+
+### :white_check_mark: Viernes 21 de Mayo (4 horas) :white_check_mark:
+    - Configuración para el websocket
+    - Request para el websocket
+    - Cambios en el serializer de notificaciones
+    - Añadiendo el serializer de notificaciones
+    - Añadiendo signals para las notificaciones
+---
+
+### :white_check_mark: Sabado 22 de Mayo (3 horas) :white_check_mark:
+    - Scripts para la base de datos
+    - Agregando id en el serializer de usuario
+    - Modificando los signals para la notificaciones de comentarios y follows
+    - Agregando nuevos requirements
+---
+
+### :white_check_mark: Domingo 23 de Mayo (2 hora) :white_check_mark:
+    - Arreglando la query para conseguir los mejores usuarios
+    - Solucionando error para cambiar a una contraseña no segura
+    - Paginación de los posts filtrado por un usuario
+---
+
+### :white_check_mark: Lunes 24 de Mayo (3 horas) :white_check_mark:
+    - Imagenes para tags
+    - Filtros post por tags
+    - Label en currency y permitir cambiar el currency del usuario
+    - Cambios en el serializer de los tags
+---
+
+### :white_check_mark: Miércoles 26 de Mayo (1 hora) :white_check_mark:
+    - Paginación de meses y post por usuarios
+    - Notificación de menciones en los comentarios
 ---
