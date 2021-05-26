@@ -4,6 +4,7 @@ from django.db.models import Q, Count
 from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -194,8 +195,10 @@ class PostByUser(mixins.ListModelMixin,
                  viewsets.GenericViewSet):
     permissions_class = [IsAuthenticated, ]
 
+    pagination_class = LimitOffsetPagination
     serializer_class = PostModelSerializer
     lookup_field = 'username'
+    LimitOffsetPagination.default_limit = 12
 
     def get_object(self):
         return get_object_or_404(

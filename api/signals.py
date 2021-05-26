@@ -3,7 +3,7 @@ import requests
 import sys
 from api.serializers.notifications import NotificationModelSerializer
 from app import settings
-from core.models import Post, Notification, Comment, UserFollowing
+from core.models import Post, Notification, Comment, UserFollowing, User
 from rest_framework.authtoken.models import Token
 
 
@@ -31,10 +31,31 @@ def comment_created(sender, instance, created, **kwargs):
         id_type=instance.post.pk,
         from_user=instance.author,
         notification_type='comment',
-        content='ha realizado un comentario en tu post.'
+        content='ha realizado un comentario en tu post'
     )
     serializer = NotificationModelSerializer(notification).data
     send_ws_info(serializer, instance.post.author.id)
+
+
+def comment_created_mention(sender, instance, created, **kwargs):
+    for word in instance.description.split():
+        if word.startswith('@'):
+            try:
+                username = word[1:]
+                if username == instance.author.username:
+                    return
+                to_user = User.objects.get(username=username)
+                notification = Notification.objects.create(
+                    to_user=to_user,
+                    id_type=instance.post.pk,
+                    from_user=instance.author,
+                    notification_type='mention',
+                    content='te ha mencionado en un comentario'
+                )
+                serializer = NotificationModelSerializer(notification).data
+                send_ws_info(serializer, to_user.id)
+            except Exception as e:
+                pass
 
 
 def following_created(sender, instance, created, **kwargs):
@@ -54,6 +75,7 @@ def following_created(sender, instance, created, **kwargs):
 if 'test' not in sys.argv:
     post_save.connect(post_created, sender=Post)
     post_save.connect(comment_created, sender=Comment)
+    post_save.connect(comment_created_mention, sender=Comment)
     post_save.connect(following_created, sender=UserFollowing)
 
 

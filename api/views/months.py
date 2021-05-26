@@ -3,6 +3,7 @@ import datetime
 from django.db.models import Q, Sum
 from rest_framework import viewsets, mixins, status
 from rest_framework.generics import get_object_or_404
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.views import APIView
@@ -22,8 +23,11 @@ class MonthViewSet(mixins.ListModelMixin,
                    mixins.DestroyModelMixin,
                    mixins.CreateModelMixin,
                    viewsets.GenericViewSet):
+
+    pagination_class = LimitOffsetPagination
     serializer_class = MonthModelSerializer
     lookup_field = "id"
+    LimitOffsetPagination.default_limit = 9
 
     def get_permissions(self):
         if self.action in ['create', 'list']:
